@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import os
 import shutil
-import cairosvg
 from multiprocessing import Pool
 import tempfile
 from io import BytesIO
+import cairosvg
 from tqdm.auto import tqdm
 from PIL import Image, ImageFile, ImageFilter, ImageChops, ImageEnhance, ImageOps
 
@@ -45,8 +45,6 @@ class TempMaskPointers:
     mask: str
     maskname: str
     shadow: str
-
-
 
 
 class TempEffectPointers:
@@ -137,9 +135,9 @@ def flip(tempimages: TempImagePointers):
         shadow = Image.open(tempimages.shadow)
         wal = Image.open(tempimages.wal)
         flipped = Image.open(tempimages.flipped)
-        flip = ImageChops.multiply(wal, shadow)
-        flip.paste(flipped, mask=mask)
-        flip.save(out)
+        flipimg = ImageChops.multiply(wal, shadow)
+        flipimg.paste(flipped, mask=mask)
+        flipimg.save(out)
 
 
 def black_overlay(tempimages: TempImagePointers):
@@ -297,11 +295,25 @@ def main():
             masklist.append((svg, wallpaper, walname))
 
     with Pool(os.cpu_count()) as pool:
-        for result in tqdm(pool.imap_unordered(create_effect_temps, effectlist), total=len(effectlist), desc="Creating effect temporaries", unit="image", ascii=True, dynamic_ncols=True):
+        for result in tqdm(
+            pool.imap_unordered(create_effect_temps, effectlist),
+            total=len(effectlist),
+            desc="Creating effect temporaries",
+            unit="image",
+            ascii=True,
+            dynamic_ncols=True,
+        ):
             templist.append(result)
 
     with Pool(os.cpu_count()) as pool:
-        for result in tqdm(pool.imap_unordered(create_mask_temps, masklist), total=len(masklist), desc="Creating mask temporaries", unit="image", ascii=True, dynamic_ncols=True):
+        for result in tqdm(
+            pool.imap_unordered(create_mask_temps, masklist),
+            total=len(masklist),
+            desc="Creating mask temporaries",
+            unit="image",
+            ascii=True,
+            dynamic_ncols=True,
+        ):
             for wallpaper in templist:
                 pointers = TempImagePointers()
                 pointers.blurred_dark = wallpaper.blurred_dark
@@ -320,7 +332,14 @@ def main():
                     renderlist.append(arguments)
 
     with Pool(os.cpu_count()) as pool:
-        for _ in tqdm(pool.imap_unordered(render, renderlist), total=len(renderlist), desc="Rendering wallpapers", unit="image", ascii=True, dynamic_ncols=True):
+        for _ in tqdm(
+            pool.imap_unordered(render, renderlist),
+            total=len(renderlist),
+            desc="Rendering wallpapers",
+            unit="image",
+            ascii=True,
+            dynamic_ncols=True,
+        ):
             pass
     # for image in renderlist:
     #     render(image)
