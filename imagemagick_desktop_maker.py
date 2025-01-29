@@ -54,6 +54,7 @@ class TempMaskPointers:
     mask: str
     maskname: str
     shadow: str
+    walname: str
 
 
 class TempEffectPointers:
@@ -223,6 +224,7 @@ def create_mask_temps(arguments: tuple[str, ImageFile.ImageFile, str]) -> TempMa
     height, width = wal.size
 
     pointers.maskname = os.path.splitext(os.path.basename(svg))[0]
+    pointers.walname = walname
 
     cairosvg.svg2png(url=os.path.join(SVGDIR, svg), write_to=tmpmask, output_height=height, output_width=width, scale=1)
     mask = Image.open(tmpmask)
@@ -377,23 +379,26 @@ def main():
             ascii=True,
             dynamic_ncols=True,
         ):
-            for wallpaper in templist:
-                pointers = TempImagePointers()
-                pointers.blurred_dark = wallpaper.blurred_dark
-                pointers.blurred_darker = wallpaper.blurred_darker
-                pointers.brightened = wallpaper.brightened
-                pointers.flipped = wallpaper.flipped
-                pointers.mask = result.mask
-                pointers.maskname = result.maskname
-                pointers.negated = wallpaper.negated
-                pointers.pixelated = wallpaper.pixelated
-                pointers.shadow = result.shadow
-                pointers.wal = wallpaper.wal
-                pointers.walname = wallpaper.walname
-                pointers.args = args
-                for method in sorted(METHODS):
-                    arguments: tuple[TempImagePointers, str] = (pointers, method)
-                    renderlist.append(arguments)
+            for wall in templist:
+                if wall.walname == result.walname:
+                    wallpaper = wall
+                    break
+            pointers = TempImagePointers()
+            pointers.blurred_dark = wallpaper.blurred_dark
+            pointers.blurred_darker = wallpaper.blurred_darker
+            pointers.brightened = wallpaper.brightened
+            pointers.flipped = wallpaper.flipped
+            pointers.mask = result.mask
+            pointers.maskname = result.maskname
+            pointers.negated = wallpaper.negated
+            pointers.pixelated = wallpaper.pixelated
+            pointers.shadow = result.shadow
+            pointers.wal = wallpaper.wal
+            pointers.walname = wallpaper.walname
+            pointers.args = args
+            for method in sorted(METHODS):
+                arguments: tuple[TempImagePointers, str] = (pointers, method)
+                renderlist.append(arguments)
 
     with Pool(os.cpu_count()) as pool:
         for _ in tqdm(
