@@ -10,11 +10,6 @@
         "python.analysis.inlayHints.callArgumentNames": "off",
         "python.analysis.inlayHints.functionReturnTypes": false,
         "python.analysis.inlayHints.variableTypes": false,
-        "pylint.args": [
-            "--disable=C0111",
-            "--disable=C0301",
-            "--good-names-rgxs=^[_a-z][_a-z0-9]?$"
-        ],
         "editor.formatOnSave": false,
         "black-formatter.interpreter": [
             "/usr/bin/python3"
@@ -22,21 +17,15 @@
         "black-formatter.args": [
             "-l 140"
         ],
-        "gitblame.inlineMessageEnabled": true,
-        "gitblame.inlineMessageFormat": "${author.name}, ${time.ago} • ${commit.summary}",
-        "gitblame.statusBarMessageFormat": "${author.name} (${time.ago})",
         "[python]": {
             "editor.defaultFormatter": "ms-python.black-formatter"
         }
     },
     "extensions": {
         "recommendations": [
-            "ms-python.black-formatter",
             "ms-python.python",
             "ms-python.vscode-pylance",
             "ms-python.debugpy",
-            "ms-python.pylint",
-            "waderyan.gitblame",
         ]
     }
 }

@@ -72,7 +72,9 @@ renderlist: list[tuple[TempImagePointers, str]] = []
 
 
 def parse_arguments() -> Args:
-    parser = argparse.ArgumentParser(description="Generate HTML files for a static image hosting website.", formatter_class=RichHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description="Generate HTML files for a static image hosting website.", formatter_class=RichHelpFormatter
+    )
     parser.add_argument("-m", "--masks", help="svg masks path", default=SVGDIR, type=str, dest="svgdir", metavar="FOLDER")
     parser.add_argument("-i", "--images", help="input images path", default=WALLPAPERDIR, type=str, dest="wallpaperdir", metavar="FOLDER")
     parser.add_argument("-o", "--out", help="output folder path", default=OUTDIR, type=str, dest="outdir", metavar="FOLDER")
@@ -306,9 +308,9 @@ def main():
 
     svgs = sorted(os.listdir(args.svgdir))
     wallpaprs = sorted(os.listdir(args.wallpaperdir))
-    for wallpaper in tqdm(wallpaprs, desc="Checking for existing Wallpapers", unit="files", dynamic_ncols=True):
+    for wallpaper in tqdm(wallpaprs, desc="Checking for existing Wallpapers", unit="files", dynamic_ncols=True, ascii=True):
         walname = os.path.splitext(os.path.basename(wallpaper))[0]
-        for svg in tqdm(svgs, desc=f"Checking for existing SVGs - {walname}", unit="files", dynamic_ncols=True):
+        for svg in tqdm(svgs, desc=f"Checking for existing SVGs - {walname}", unit="files", dynamic_ncols=True, ascii=True):
             svgname = os.path.splitext(os.path.basename(svg))[0]
             for method in sorted(METHODS):
                 if not os.path.exists(os.path.join(args.outdir, method)):
@@ -388,8 +390,7 @@ def main():
                 pointers.args = args
                 for method in sorted(METHODS):
                     arguments: tuple[TempImagePointers, str] = (pointers, method)
-                    if not os.path.exists(os.path.join(args.outdir, method, pointers.maskname, pointers.walname + ".jpg")):
-                        renderlist.append(arguments)
+                    renderlist.append(arguments)
 
     with Pool(os.cpu_count()) as pool:
         for _ in tqdm(
