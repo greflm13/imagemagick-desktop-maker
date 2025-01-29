@@ -171,6 +171,7 @@ def black_overlay(tempimages: TempImagePointers):
         mask = Image.open(tempimages.mask)
         shadow = Image.open(tempimages.shadow)
         wal = Image.open(tempimages.wal)
+        print(tempimages.walname, mask.size, shadow.size, wal.size)
         blover = ImageChops.multiply(wal, shadow)
         blover.paste(Image.new("RGB", wal.size, (0, 0, 0)), mask=mask)
         blover.save(out)
