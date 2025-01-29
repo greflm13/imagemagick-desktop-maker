@@ -313,10 +313,10 @@ def main():
         for svg in tqdm(svgs, desc=f"Checking for existing SVGs - {walname}", unit="files", dynamic_ncols=True, ascii=True):
             svgname = os.path.splitext(os.path.basename(svg))[0]
             for method in sorted(METHODS):
-                if not os.path.exists(os.path.join(args.outdir, method)):
-                    if method not in need_method_list:
-                        need_method_list.append(method)
-                        continue
+                # if not os.path.exists(os.path.join(args.outdir, method)):
+                if method not in need_method_list:
+                    need_method_list.append(method)
+                    continue
                 if not os.path.exists(os.path.join(args.outdir, method, svgname, walname + ".jpg")):
                     if walname not in need_wall_list:
                         need_wall_list.append(walname)
