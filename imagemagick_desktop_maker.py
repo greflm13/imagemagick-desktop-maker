@@ -220,14 +220,16 @@ def create_mask_temps(arguments: tuple[str, ImageFile.ImageFile, str]) -> TempMa
     pointers = TempMaskPointers()
     tmpmask = BytesIO()
 
+    height, width = wal.size
+
     pointers.maskname = os.path.splitext(os.path.basename(svg))[0]
 
-    cairosvg.svg2png(url=os.path.join(SVGDIR, svg), write_to=tmpmask, output_height=wal.height, output_width=wal.width, scale=1)
+    cairosvg.svg2png(url=os.path.join(SVGDIR, svg), write_to=tmpmask, output_height=height, output_width=width, scale=1)
     mask = Image.open(tmpmask)
     mask.save(os.path.join(TEMPDIR, f"mask_{pointers.maskname}_{walname}.png"))
     pointers.mask = os.path.join(TEMPDIR, f"mask_{pointers.maskname}_{walname}.png")
 
-    blurred_mask = Image.new("RGB", (mask.width, mask.height), (255, 255, 255))
+    blurred_mask = Image.new("RGB", wal.size, (255, 255, 255))
     blurred_mask.paste(mask, mask=mask)
     shadow = blurred_mask.filter(filter=ImageFilter.GaussianBlur(radius=100))
     shadow.save(os.path.join(TEMPDIR, f"shadow_{pointers.maskname}_{walname}.png"))
@@ -286,7 +288,7 @@ def create_effect_temps(arguments: tuple[ImageFile.ImageFile, str, str]) -> Temp
         small = wal.resize((int(wal.width * 0.01), int(wal.height * 0.01)), Image.Resampling.BICUBIC)
         darkenedsmall = ImageEnhance.Brightness(small)
         darksmall = darkenedsmall.enhance(factor=0.8)
-        pixelated = darksmall.resize((wal.width, wal.height), Image.Resampling.NEAREST)
+        pixelated = darksmall.resize(wal.size, Image.Resampling.NEAREST)
         pixelated.save(os.path.join(TEMPDIR, f"pixelated_{walname}.jpg"))
         small.close()
         darksmall.close()
