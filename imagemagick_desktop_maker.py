@@ -221,7 +221,7 @@ def create_mask_temps(arguments: tuple[str, ImageFile.ImageFile, str]) -> TempMa
     pointers = TempMaskPointers()
     tmpmask = BytesIO()
 
-    height, width = wal.size
+    width, height = wal.size
 
     pointers.maskname = os.path.splitext(os.path.basename(svg))[0]
     pointers.walname = walname
