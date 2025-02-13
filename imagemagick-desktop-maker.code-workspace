@@ -11,14 +11,8 @@
         "python.analysis.inlayHints.functionReturnTypes": false,
         "python.analysis.inlayHints.variableTypes": false,
         "editor.formatOnSave": false,
-        "black-formatter.interpreter": [
-            "/usr/bin/python3"
-        ],
-        "black-formatter.args": [
-            "-l 140"
-        ],
         "[python]": {
-            "editor.defaultFormatter": "ms-python.black-formatter"
+            "editor.defaultFormatter": "charliermarsh.ruff"
         }
     },
     "extensions": {
@@ -26,6 +20,7 @@
             "ms-python.python",
             "ms-python.vscode-pylance",
             "ms-python.debugpy",
+            "charliermarsh.ruff",
         ]
     }
 }

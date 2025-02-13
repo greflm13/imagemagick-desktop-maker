@@ -17,6 +17,7 @@ OUTDIR = os.path.join(SCRIPTDIR, "Render")
 TEMPDIR = tempfile.mkdtemp()
 METHODS = [
     "BlackOverlay",
+    "BlackOverlayBlur",
     "Blur",
     "Flip",
     "InverseBlur",
@@ -26,6 +27,7 @@ METHODS = [
     "Pixelate",
     "ThroughBlack",
     "WhiteOverlay",
+    "WhiteOverlayBlur",
 ]
 
 
@@ -36,6 +38,7 @@ class Args:
 
 
 class TempImagePointers:
+    blurred: str
     blurred_dark: str
     blurred_darker: str
     brightened: str
@@ -58,6 +61,7 @@ class TempMaskPointers:
 
 
 class TempEffectPointers:
+    blurred: str
     blurred_dark: str
     blurred_darker: str
     brightened: str
@@ -73,9 +77,7 @@ renderlist: list[tuple[TempImagePointers, str]] = []
 
 
 def parse_arguments() -> Args:
-    parser = argparse.ArgumentParser(
-        description="Generate HTML files for a static image hosting website.", formatter_class=RichHelpFormatter
-    )
+    parser = argparse.ArgumentParser(description="Generate HTML files for a static image hosting website.", formatter_class=RichHelpFormatter)
     parser.add_argument("-m", "--masks", help="svg masks path", default=SVGDIR, type=str, dest="svgdir", metavar="FOLDER")
     parser.add_argument("-i", "--images", help="input images path", default=WALLPAPERDIR, type=str, dest="wallpaperdir", metavar="FOLDER")
     parser.add_argument("-o", "--out", help="output folder path", default=OUTDIR, type=str, dest="outdir", metavar="FOLDER")
@@ -167,11 +169,22 @@ def flip(tempimages: TempImagePointers):
 
 
 def black_overlay(tempimages: TempImagePointers):
-    out = os.path.join(tempimages.args.outdir, "BlackOverlay", tempimages.maskname, tempimages.walname + ".jpg")
+    out = os.path.join(tempimages.args.outdir, "BlackOverlayBlur", tempimages.maskname, tempimages.walname + ".jpg")
     if not os.path.exists(out):
         mask = Image.open(tempimages.mask)
         shadow = Image.open(tempimages.shadow)
         wal = Image.open(tempimages.wal)
+        blover = ImageChops.multiply(wal, shadow)
+        blover.paste(Image.new("RGB", wal.size, (0, 0, 0)), mask=mask)
+        blover.save(out)
+
+
+def black_overlay_blur(tempimages: TempImagePointers):
+    out = os.path.join(tempimages.args.outdir, "BlackOverlay", tempimages.maskname, tempimages.walname + ".jpg")
+    if not os.path.exists(out):
+        mask = Image.open(tempimages.mask)
+        shadow = Image.open(tempimages.shadow)
+        wal = Image.open(tempimages.blurred)
         blover = ImageChops.multiply(wal, shadow)
         blover.paste(Image.new("RGB", wal.size, (0, 0, 0)), mask=mask)
         blover.save(out)
@@ -183,6 +196,17 @@ def white_overlay(tempimages: TempImagePointers):
         mask = Image.open(tempimages.mask)
         shadow = Image.open(tempimages.shadow)
         wal = Image.open(tempimages.wal)
+        whover = ImageChops.multiply(wal, shadow)
+        whover.paste(Image.new("RGB", wal.size, (255, 255, 255)), mask=mask)
+        whover.save(out)
+
+
+def white_overlay_blur(tempimages: TempImagePointers):
+    out = os.path.join(tempimages.args.outdir, "WhiteOverlayBlur", tempimages.maskname, tempimages.walname + ".jpg")
+    if not os.path.exists(out):
+        mask = Image.open(tempimages.mask)
+        shadow = Image.open(tempimages.shadow)
+        wal = Image.open(tempimages.blurred)
         whover = ImageChops.multiply(wal, shadow)
         whover.paste(Image.new("RGB", wal.size, (255, 255, 255)), mask=mask)
         whover.save(out)
@@ -202,6 +226,7 @@ def render(arguments: tuple[TempImagePointers, str]) -> None:
     tempimages, method = arguments
     switch = {
         "BlackOverlay": black_overlay(tempimages),
+        "BlackOverlayBlur": black_overlay_blur(tempimages),
         "Blur": blur(tempimages),
         "Flip": flip(tempimages),
         "InverseBlur": inverse_blur(tempimages),
@@ -211,6 +236,7 @@ def render(arguments: tuple[TempImagePointers, str]) -> None:
         "Pixelate": pixelate(tempimages),
         "ThroughBlack": through_black(tempimages),
         "WhiteOverlay": white_overlay(tempimages),
+        "WhiteOverlayBlur": white_overlay_blur(tempimages),
     }
     switch.get(method)
 
@@ -249,6 +275,12 @@ def create_effect_temps(arguments: tuple[ImageFile.ImageFile, str, str]) -> Temp
 
     pointers.wal = walfile
     pointers.walname = walname
+
+    if not os.path.exists(os.path.join(TEMPDIR, f"blurred_{walname}.jpg")):
+        blurred = wal.filter(filter=ImageFilter.GaussianBlur(radius=80))
+        blurred.save(os.path.join(TEMPDIR, f"blurred_{walname}.jpg"))
+        blurred.close()
+    pointers.blurred = os.path.join(TEMPDIR, f"blurred_{walname}.jpg")
 
     if not os.path.exists(os.path.join(TEMPDIR, f"blurred_dark_{walname}.jpg")):
         blurred_dark = wal.filter(filter=ImageFilter.GaussianBlur(radius=80))
@@ -383,6 +415,7 @@ def main():
                     wallpaper = wall
                     break
             pointers = TempImagePointers()
+            pointers.blurred = wallpaper.blurred
             pointers.blurred_dark = wallpaper.blurred_dark
             pointers.blurred_darker = wallpaper.blurred_darker
             pointers.brightened = wallpaper.brightened
