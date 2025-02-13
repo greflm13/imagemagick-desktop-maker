@@ -170,7 +170,7 @@ def flip(tempimages: TempImagePointers):
 
 
 def black_overlay(tempimages: TempImagePointers):
-    out = os.path.join(tempimages.args.outdir, "BlackOverlayBlur", tempimages.maskname, tempimages.walname + ".jpg")
+    out = os.path.join(tempimages.args.outdir, "BlackOverlay", tempimages.maskname, tempimages.walname + ".jpg")
     if not os.path.exists(out):
         mask = Image.open(tempimages.mask)
         shadow = Image.open(tempimages.shadow)
@@ -181,7 +181,7 @@ def black_overlay(tempimages: TempImagePointers):
 
 
 def black_overlay_blur(tempimages: TempImagePointers):
-    out = os.path.join(tempimages.args.outdir, "BlackOverlay", tempimages.maskname, tempimages.walname + ".jpg")
+    out = os.path.join(tempimages.args.outdir, "BlackOverlayBlur", tempimages.maskname, tempimages.walname + ".jpg")
     if not os.path.exists(out):
         mask = Image.open(tempimages.mask)
         shadow = Image.open(tempimages.shadow)
