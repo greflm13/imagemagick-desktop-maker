@@ -23,6 +23,7 @@ METHODS = [
     "InverseBlur",
     "InverseBlurDarker",
     "InverseNegate",
+    "InversePixelate",
     "Negate",
     "Pixelate",
     "ThroughBlack",
@@ -222,6 +223,16 @@ def pixelate(tempimages: TempImagePointers):
         pix.save(out)
 
 
+def inverse_pixelate(tempimages: TempImagePointers):
+    out = os.path.join(tempimages.args.outdir, "InversePixelate", tempimages.maskname, tempimages.walname + ".jpg")
+    if not os.path.exists(out):
+        mask = Image.open(tempimages.mask)
+        wal = Image.open(tempimages.wal)
+        pix = Image.open(tempimages.pixelated)
+        wal.paste(pix, mask=mask)
+        wal.save(out)
+
+
 def render(arguments: tuple[TempImagePointers, str]) -> None:
     tempimages, method = arguments
     switch = {
@@ -232,6 +243,7 @@ def render(arguments: tuple[TempImagePointers, str]) -> None:
         "InverseBlur": inverse_blur(tempimages),
         "InverseBlurDarker": inverse_blur_darker(tempimages),
         "InverseNegate": inverse_negate(tempimages),
+        "InversePixelate": inverse_pixelate(tempimages),
         "Negate": negate(tempimages),
         "Pixelate": pixelate(tempimages),
         "ThroughBlack": through_black(tempimages),
