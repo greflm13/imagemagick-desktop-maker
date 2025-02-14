@@ -414,31 +414,33 @@ def main():
                 pool.imap_unordered(create_mask_temps, masklist), total=len(masklist), desc="Creating mask temporaries", unit="image", ascii=True, dynamic_ncols=True
             ):
                 templist.append(result)
+
+        print(effectlist)
+
         with Pool(os.cpu_count()) as pool:
             for result in tqdm(
                 pool.imap_unordered(create_effect_temps, effectlist), total=len(effectlist), desc="Creating effect temporaries", unit="image", ascii=True, dynamic_ncols=True
             ):
-                for mask in templist:
-                    if mask.size == result.size:
-                        ourmask = mask
-                        break
-                pointers = TempImagePointers()
-                pointers.blurred = result.blurred
-                pointers.blurred_dark = result.blurred_dark
-                pointers.blurred_darker = result.blurred_darker
-                pointers.brightened = result.brightened
-                pointers.flipped = result.flipped
-                pointers.mask = ourmask.mask
-                pointers.maskname = ourmask.maskname
-                pointers.negated = result.negated
-                pointers.pixelated = result.pixelated
-                pointers.shadow = ourmask.shadow
-                pointers.wal = result.wal
-                pointers.walname = result.walname
-                pointers.args = args
-                for method in sorted(METHODS):
-                    arguments: tuple[TempImagePointers, str] = (pointers, method)
-                    renderlist.append(arguments)
+                for svg, size in masklist:
+                    maskname = os.path.splitext(os.path.basename(svg))[0]
+                    width, height = size
+                    pointers = TempImagePointers()
+                    pointers.blurred = result.blurred
+                    pointers.blurred_dark = result.blurred_dark
+                    pointers.blurred_darker = result.blurred_darker
+                    pointers.brightened = result.brightened
+                    pointers.flipped = result.flipped
+                    pointers.mask = os.path.join(TEMPDIR, f"mask_{maskname}_{width}x{height}.png")
+                    pointers.maskname = maskname
+                    pointers.negated = result.negated
+                    pointers.pixelated = result.pixelated
+                    pointers.shadow = os.path.join(TEMPDIR, f"shadow_{maskname}_{width}x{height}.png")
+                    pointers.wal = result.wal
+                    pointers.walname = result.walname
+                    pointers.args = args
+                    for method in sorted(METHODS):
+                        arguments: tuple[TempImagePointers, str] = (pointers, method)
+                        renderlist.append(arguments)
 
         with Pool(os.cpu_count()) as pool:
             for _ in tqdm(
@@ -449,7 +451,7 @@ def main():
                 ascii=True,
                 dynamic_ncols=True,
             ):
-                ...
+                pass
 
     finally:
         shutil.rmtree(TEMPDIR)
