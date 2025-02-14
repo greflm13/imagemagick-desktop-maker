@@ -281,7 +281,7 @@ def create_mask_temps(arguments: tuple[str, tuple[int, int]]) -> TempMaskPointer
         shadow.close()
 
     pointers.mask = os.path.join(TEMPDIR, f"mask_{tmpname}")
-    pointers.shadow = os.path.join(TEMPDIR, f"shadow_{tmpname}.png")
+    pointers.shadow = os.path.join(TEMPDIR, f"shadow_{tmpname}")
 
     return pointers
 
