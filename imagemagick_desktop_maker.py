@@ -58,7 +58,7 @@ class TempMaskPointers:
     mask: str
     maskname: str
     shadow: str
-    walname: str
+    size: tuple[int, int]
 
 
 class TempEffectPointers:
@@ -71,9 +71,10 @@ class TempEffectPointers:
     pixelated: str
     wal: str
     walname: str
+    size: tuple[int, int]
 
 
-templist: list[TempEffectPointers] = []
+templist: list[TempMaskPointers] = []
 renderlist: list[tuple[TempImagePointers, str]] = []
 
 
@@ -253,15 +254,15 @@ def render(arguments: tuple[TempImagePointers, str]) -> None:
     switch.get(method)
 
 
-def create_mask_temps(arguments: tuple[str, ImageFile.ImageFile, str]) -> TempMaskPointers:
-    svg, wal, walname = arguments
+def create_mask_temps(arguments: tuple[str, tuple[int, int]]) -> TempMaskPointers:
+    svg, size = arguments
     pointers = TempMaskPointers()
     tmpmask = BytesIO()
 
-    width, height = wal.size
+    width, height = size
 
     pointers.maskname = os.path.splitext(os.path.basename(svg))[0]
-    pointers.walname = walname
+    pointers.size = size
 
     tmpname = f"{pointers.maskname}_{width}x{height}.png"
 
@@ -270,7 +271,7 @@ def create_mask_temps(arguments: tuple[str, ImageFile.ImageFile, str]) -> TempMa
         mask = Image.open(tmpmask)
         mask.save(os.path.join(TEMPDIR, f"mask_{tmpname}"))
 
-        blurred_mask = Image.new("RGB", wal.size, (255, 255, 255))
+        blurred_mask = Image.new("RGB", size, (255, 255, 255))
         blurred_mask.paste(mask, mask=mask)
         shadow = blurred_mask.filter(filter=ImageFilter.GaussianBlur(radius=100))
         shadow.save(os.path.join(TEMPDIR, f"shadow_{tmpname}.png"))
@@ -291,6 +292,7 @@ def create_effect_temps(arguments: tuple[ImageFile.ImageFile, str, str]) -> Temp
 
     pointers.wal = walfile
     pointers.walname = walname
+    pointers.size = wal.size
 
     if not os.path.exists(os.path.join(TEMPDIR, f"blurred_{walname}.jpg")):
         blurred = wal.filter(filter=ImageFilter.GaussianBlur(radius=80))
@@ -351,116 +353,106 @@ def main():
     svgs: list[str] = []
     wallpapers: list[ImageFile.ImageFile] = []
     effectlist: list[tuple[ImageFile.ImageFile, str, str]] = []
-    masklist: list[tuple[str, ImageFile.ImageFile, str]] = []
+    masklist: set[tuple[str, tuple[int, int]]] = set()
     need_wall_list: list[str] = []
     need_svg_list: list[str] = []
     need_method_list: list[str] = []
 
     args = parse_arguments()
 
-    svgs = sorted(os.listdir(args.svgdir))
-    wallpaprs = sorted(os.listdir(args.wallpaperdir))
-    for wallpaper in tqdm(wallpaprs, desc="Checking for existing Wallpapers", unit="files", dynamic_ncols=True, ascii=True):
-        walname = os.path.splitext(os.path.basename(wallpaper))[0]
-        for svg in tqdm(svgs, desc=f"Checking for existing SVGs - {walname}", unit="files", dynamic_ncols=True, ascii=True):
-            svgname = os.path.splitext(os.path.basename(svg))[0]
-            for method in sorted(METHODS):
-                # if not os.path.exists(os.path.join(args.outdir, method)):
-                if method not in need_method_list:
-                    need_method_list.append(method)
-                    continue
-                if not os.path.exists(os.path.join(args.outdir, method, svgname, walname + ".jpg")):
-                    if walname not in need_wall_list:
-                        need_wall_list.append(walname)
-                    if svgname not in need_svg_list:
-                        need_svg_list.append(svgname)
-
-    print(f"Temp Masks to be created: {len(need_svg_list)}")
-    print(need_svg_list)
-    print(f"Wallpapers needed: {len(need_wall_list)}")
-    print(need_wall_list)
-    print(f"Effects to be made: {len(need_method_list)}")
-    print(need_method_list)
-
-    for wallpaper in wallpaprs:
-        walname = os.path.splitext(os.path.basename(wallpaper))[0]
-        if walname in need_wall_list:
-            wal = Image.open(os.path.join(args.wallpaperdir, wallpaper))
-            wallpapers.append(wal)
-
-    for wallpaper in wallpapers:
-        walname = os.path.splitext(os.path.basename(wallpaper.filename))[0]
-        if walname in need_wall_list:
-            effectlist.append((wallpaper, wallpaper.filename, walname))
-        else:
-            continue
-        for svg in svgs:
-            svgname = os.path.splitext(os.path.basename(svg))[0]
-            if svgname in need_svg_list:
+    try:
+        svgs = sorted(os.listdir(args.svgdir))
+        wallpaprs = sorted(os.listdir(args.wallpaperdir))
+        for wallpaper in tqdm(wallpaprs, desc="Checking for existing Wallpapers", unit="files", dynamic_ncols=True, ascii=True):
+            walname = os.path.splitext(os.path.basename(wallpaper))[0]
+            for svg in tqdm(svgs, desc=f"Checking for existing SVGs - {walname}", unit="files", dynamic_ncols=True, ascii=True):
+                svgname = os.path.splitext(os.path.basename(svg))[0]
                 for method in sorted(METHODS):
-                    if not os.path.exists(os.path.join(args.outdir)):
-                        os.mkdir(os.path.join(args.outdir))
-                    if not os.path.exists(os.path.join(args.outdir, method)):
-                        os.mkdir(os.path.join(args.outdir, method))
-                    if not os.path.exists(os.path.join(args.outdir, method, svgname)):
-                        os.mkdir(os.path.join(args.outdir, method, svgname))
-                # TODO create masklist according to image size
-                masklist.append((svg, wallpaper, walname))
+                    # if not os.path.exists(os.path.join(args.outdir, method)):
+                    if method not in need_method_list:
+                        need_method_list.append(method)
+                        continue
+                    if not os.path.exists(os.path.join(args.outdir, method, svgname, walname + ".jpg")):
+                        if walname not in need_wall_list:
+                            need_wall_list.append(walname)
+                        if svgname not in need_svg_list:
+                            need_svg_list.append(svgname)
 
-    with Pool(os.cpu_count()) as pool:
-        for result in tqdm(
-            pool.imap_unordered(create_effect_temps, effectlist),
-            total=len(effectlist),
-            desc="Creating effect temporaries",
-            unit="image",
-            ascii=True,
-            dynamic_ncols=True,
-        ):
-            templist.append(result)
+        print(f"Temp Masks to be created: {len(need_svg_list)}")
+        print(need_svg_list)
+        print(f"Wallpapers needed: {len(need_wall_list)}")
+        print(need_wall_list)
+        print(f"Effects to be made: {len(need_method_list)}")
+        print(need_method_list)
 
-    with Pool(os.cpu_count()) as pool:
-        for result in tqdm(
-            pool.imap_unordered(create_mask_temps, masklist),
-            total=len(masklist),
-            desc="Creating mask temporaries",
-            unit="image",
-            ascii=True,
-            dynamic_ncols=True,
-        ):
-            for wall in templist:
-                if wall.walname == result.walname:
-                    wallpaper = wall
-                    break
-            pointers = TempImagePointers()
-            pointers.blurred = wallpaper.blurred
-            pointers.blurred_dark = wallpaper.blurred_dark
-            pointers.blurred_darker = wallpaper.blurred_darker
-            pointers.brightened = wallpaper.brightened
-            pointers.flipped = wallpaper.flipped
-            pointers.mask = result.mask
-            pointers.maskname = result.maskname
-            pointers.negated = wallpaper.negated
-            pointers.pixelated = wallpaper.pixelated
-            pointers.shadow = result.shadow
-            pointers.wal = wallpaper.wal
-            pointers.walname = wallpaper.walname
-            pointers.args = args
-            for method in sorted(METHODS):
-                arguments: tuple[TempImagePointers, str] = (pointers, method)
-                renderlist.append(arguments)
+        for wallpaper in wallpaprs:
+            walname = os.path.splitext(os.path.basename(wallpaper))[0]
+            if walname in need_wall_list:
+                wal = Image.open(os.path.join(args.wallpaperdir, wallpaper))
+                wallpapers.append(wal)
 
-    with Pool(os.cpu_count()) as pool:
-        for _ in tqdm(
-            pool.imap_unordered(render, renderlist),
-            total=len(renderlist),
-            desc="Rendering wallpapers",
-            unit="image",
-            ascii=True,
-            dynamic_ncols=True,
-        ):
-            pass
+        for wallpaper in wallpapers:
+            walname = os.path.splitext(os.path.basename(wallpaper.filename))[0]
+            if walname in need_wall_list:
+                effectlist.append((wallpaper, wallpaper.filename, walname))
+            else:
+                continue
+            for svg in svgs:
+                svgname = os.path.splitext(os.path.basename(svg))[0]
+                if svgname in need_svg_list:
+                    for method in sorted(METHODS):
+                        if not os.path.exists(os.path.join(args.outdir)):
+                            os.mkdir(os.path.join(args.outdir))
+                        if not os.path.exists(os.path.join(args.outdir, method)):
+                            os.mkdir(os.path.join(args.outdir, method))
+                        if not os.path.exists(os.path.join(args.outdir, method, svgname)):
+                            os.mkdir(os.path.join(args.outdir, method, svgname))
+                    masklist.add((svg, wallpaper.size))
 
-    shutil.rmtree(TEMPDIR)
+        with Pool(os.cpu_count()) as pool:
+            for result in tqdm(
+                pool.imap_unordered(create_mask_temps, masklist), total=len(masklist), desc="Creating mask temporaries", unit="image", ascii=True, dynamic_ncols=True
+            ):
+                templist.append(result)
+        with Pool(os.cpu_count()) as pool:
+            for result in tqdm(
+                pool.imap_unordered(create_effect_temps, effectlist), total=len(effectlist), desc="Creating effect temporaries", unit="image", ascii=True, dynamic_ncols=True
+            ):
+                for mask in templist:
+                    if mask.size == result.size:
+                        ourmask = mask
+                        break
+                pointers = TempImagePointers()
+                pointers.blurred = result.blurred
+                pointers.blurred_dark = result.blurred_dark
+                pointers.blurred_darker = result.blurred_darker
+                pointers.brightened = result.brightened
+                pointers.flipped = result.flipped
+                pointers.mask = ourmask.mask
+                pointers.maskname = ourmask.maskname
+                pointers.negated = result.negated
+                pointers.pixelated = result.pixelated
+                pointers.shadow = ourmask.shadow
+                pointers.wal = result.wal
+                pointers.walname = result.walname
+                pointers.args = args
+                for method in sorted(METHODS):
+                    arguments: tuple[TempImagePointers, str] = (pointers, method)
+                    renderlist.append(arguments)
+
+        with Pool(os.cpu_count()) as pool:
+            for _ in tqdm(
+                pool.imap_unordered(render, renderlist),
+                total=len(renderlist),
+                desc="Rendering wallpapers",
+                unit="image",
+                ascii=True,
+                dynamic_ncols=True,
+            ):
+                ...
+
+    finally:
+        shutil.rmtree(TEMPDIR)
 
 
 if __name__ == "__main__":
