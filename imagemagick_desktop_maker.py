@@ -263,20 +263,24 @@ def create_mask_temps(arguments: tuple[str, ImageFile.ImageFile, str]) -> TempMa
     pointers.maskname = os.path.splitext(os.path.basename(svg))[0]
     pointers.walname = walname
 
-    cairosvg.svg2png(url=os.path.join(SVGDIR, svg), write_to=tmpmask, output_height=height, output_width=width, scale=1)
-    mask = Image.open(tmpmask)
-    mask.save(os.path.join(TEMPDIR, f"mask_{pointers.maskname}_{walname}.png"))
-    pointers.mask = os.path.join(TEMPDIR, f"mask_{pointers.maskname}_{walname}.png")
+    tmpname = f"{pointers.maskname}_{width}x{height}.png"
 
-    blurred_mask = Image.new("RGB", wal.size, (255, 255, 255))
-    blurred_mask.paste(mask, mask=mask)
-    shadow = blurred_mask.filter(filter=ImageFilter.GaussianBlur(radius=100))
-    shadow.save(os.path.join(TEMPDIR, f"shadow_{pointers.maskname}_{walname}.png"))
-    pointers.shadow = os.path.join(TEMPDIR, f"shadow_{pointers.maskname}_{walname}.png")
+    if not os.path.exists(os.path.join(TEMPDIR, f"mask_{tmpname}")):
+        cairosvg.svg2png(url=os.path.join(SVGDIR, svg), write_to=tmpmask, output_height=height, output_width=width, scale=1)
+        mask = Image.open(tmpmask)
+        mask.save(os.path.join(TEMPDIR, f"mask_{tmpname}"))
 
-    mask.close()
-    blurred_mask.close()
-    shadow.close()
+        blurred_mask = Image.new("RGB", wal.size, (255, 255, 255))
+        blurred_mask.paste(mask, mask=mask)
+        shadow = blurred_mask.filter(filter=ImageFilter.GaussianBlur(radius=100))
+        shadow.save(os.path.join(TEMPDIR, f"shadow_{tmpname}.png"))
+
+        mask.close()
+        blurred_mask.close()
+        shadow.close()
+
+    pointers.mask = os.path.join(TEMPDIR, f"mask_{tmpname}")
+    pointers.shadow = os.path.join(TEMPDIR, f"shadow_{tmpname}.png")
 
     return pointers
 
@@ -400,6 +404,7 @@ def main():
                         os.mkdir(os.path.join(args.outdir, method))
                     if not os.path.exists(os.path.join(args.outdir, method, svgname)):
                         os.mkdir(os.path.join(args.outdir, method, svgname))
+                # TODO create masklist according to image size
                 masklist.append((svg, wallpaper, walname))
 
     with Pool(os.cpu_count()) as pool:
