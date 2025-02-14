@@ -274,7 +274,7 @@ def create_mask_temps(arguments: tuple[str, tuple[int, int]]) -> TempMaskPointer
         blurred_mask = Image.new("RGB", size, (255, 255, 255))
         blurred_mask.paste(mask, mask=mask)
         shadow = blurred_mask.filter(filter=ImageFilter.GaussianBlur(radius=100))
-        shadow.save(os.path.join(TEMPDIR, f"shadow_{tmpname}.png"))
+        shadow.save(os.path.join(TEMPDIR, f"shadow_{tmpname}"))
 
         mask.close()
         blurred_mask.close()
