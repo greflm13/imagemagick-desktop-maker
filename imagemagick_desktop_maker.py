@@ -295,7 +295,7 @@ def create_effect_temps(arguments: tuple[ImageFile.ImageFile, str, str]) -> Temp
     pointers.size = wal.size
 
     if not os.path.exists(os.path.join(TEMPDIR, f"blurred_{walname}.jpg")):
-        blurred = wal.filter(filter=ImageFilter.GaussianBlur(radius=80))
+        blurred = wal.filter(filter=ImageFilter.GaussianBlur(radius=20))
         blurred.save(os.path.join(TEMPDIR, f"blurred_{walname}.jpg"))
         blurred.close()
     pointers.blurred = os.path.join(TEMPDIR, f"blurred_{walname}.jpg")
@@ -415,26 +415,25 @@ def main():
             ):
                 templist.append(result)
 
-        print(effectlist)
-
         with Pool(os.cpu_count()) as pool:
             for result in tqdm(
                 pool.imap_unordered(create_effect_temps, effectlist), total=len(effectlist), desc="Creating effect temporaries", unit="image", ascii=True, dynamic_ncols=True
             ):
-                for svg, size in masklist:
+                for svg in svgs:
                     maskname = os.path.splitext(os.path.basename(svg))[0]
-                    width, height = size
+                    width, height = result.size
+                    tmpname = f"{maskname}_{width}x{height}.png"
                     pointers = TempImagePointers()
                     pointers.blurred = result.blurred
                     pointers.blurred_dark = result.blurred_dark
                     pointers.blurred_darker = result.blurred_darker
                     pointers.brightened = result.brightened
                     pointers.flipped = result.flipped
-                    pointers.mask = os.path.join(TEMPDIR, f"mask_{maskname}_{width}x{height}.png")
+                    pointers.mask = os.path.join(TEMPDIR, f"mask_{tmpname}")
                     pointers.maskname = maskname
                     pointers.negated = result.negated
                     pointers.pixelated = result.pixelated
-                    pointers.shadow = os.path.join(TEMPDIR, f"shadow_{maskname}_{width}x{height}.png")
+                    pointers.shadow = os.path.join(TEMPDIR, f"shadow_{tmpname}")
                     pointers.wal = result.wal
                     pointers.walname = result.walname
                     pointers.args = args
