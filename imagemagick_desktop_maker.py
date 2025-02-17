@@ -16,8 +16,6 @@ WALLPAPERDIR = os.path.join(SCRIPTDIR, "Wallpapers")
 OUTDIR = os.path.join(SCRIPTDIR, "Render")
 TEMPDIR = tempfile.mkdtemp()
 METHODS = [
-    "BlackOverlay",
-    "BlackOverlayBlur",
     "Blur",
     "Flip",
     "InverseBlur",
@@ -27,9 +25,23 @@ METHODS = [
     "Negate",
     "Pixelate",
     "ThroughBlack",
-    "WhiteOverlay",
-    "WhiteOverlayBlur",
 ]
+
+COLOR_OVERLAYS = ["Black", "Red", "White"]
+
+NEED_BLUR = "OverlayBlur"
+NEED_BLUR_DARK = set(["Blur", "InverseBlur"])
+NEED_BLUR_DARKER = set(["InverseBlurDarker"])
+NEED_BRIGHTENED = set(["Blur"])
+NEED_FLIP = set(["Flip"])
+NEED_NEGATE = set(["InverseNegate", "Negate"])
+NEED_PIXELATE = set(["InversePixelate", "Pixelate"])
+
+COLORS = {
+    "Black": "#000000",
+    "Red": "#DA002D",
+    "White": "#FFFFFF",
+}
 
 
 class Args:
@@ -70,8 +82,152 @@ class TempEffectPointers:
     negated: str
     pixelated: str
     wal: str
+    walfile: str
     walname: str
     size: tuple[int, int]
+
+
+class Render:
+    tempimages: TempImagePointers
+    method: str
+    color: str
+
+    switch = {
+        "BlackOverlay": "color_overlay",
+        "BlackOverlayBlur": "color_overlay_blur",
+        "Blur": "blur",
+        "Flip": "flip",
+        "InverseBlur": "inverse_blur",
+        "InverseBlurDarker": "inverse_blur_darker",
+        "InverseNegate": "inverse_negate",
+        "InversePixelate": "inverse_pixelate",
+        "Negate": "negate",
+        "Pixelate": "pixelate",
+        "RedOverlay": "color_overlay",
+        "RedOverlayBlur": "color_overlay_blur",
+        "ThroughBlack": "through_black",
+        "WhiteOverlay": "color_overlay",
+        "WhiteOverlayBlur": "color_overlay_blur",
+    }
+
+    def __init__(self, tempimages: TempImagePointers, method: str, color: str | None = None):
+        self.tempimages = tempimages
+        self.method = method
+        self.color = color
+
+    def through_black(self):
+        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
+        if not os.path.exists(out):
+            mask = Image.open(self.tempimages.mask)
+            wal = Image.open(self.tempimages.wal)
+            thrubl_image = Image.new("RGB", (wal.width, wal.height))
+            thrubl_image.paste(wal, mask=mask)
+            thrubl_image.save(out)
+
+    def blur(self):
+        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
+        if not os.path.exists(out):
+            mask = Image.open(self.tempimages.mask)
+            shadow = Image.open(self.tempimages.shadow)
+            blurred_dark = Image.open(self.tempimages.blurred_dark)
+            brightened = Image.open(self.tempimages.brightened)
+            blurred_image = ImageChops.multiply(blurred_dark, shadow)
+            blurred_image.paste(brightened, mask=mask)
+            blurred_image.save(out)
+
+    def inverse_blur(self):
+        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
+        if not os.path.exists(out):
+            mask = Image.open(self.tempimages.mask)
+            shadow = Image.open(self.tempimages.shadow)
+            wal = Image.open(self.tempimages.wal)
+            blurred_dark = Image.open(self.tempimages.blurred_dark)
+            invblur = ImageChops.multiply(wal, shadow)
+            invblur.paste(blurred_dark, mask=mask)
+            invblur.save(out)
+
+    def inverse_blur_darker(self):
+        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
+        if not os.path.exists(out):
+            mask = Image.open(self.tempimages.mask)
+            shadow = Image.open(self.tempimages.shadow)
+            wal = Image.open(self.tempimages.wal)
+            blurred_darker = Image.open(self.tempimages.blurred_darker)
+            inblda_image = ImageChops.multiply(wal, shadow)
+            inblda_image.paste(blurred_darker, mask=mask)
+            inblda_image.save(out)
+
+    def negate(self):
+        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
+        if not os.path.exists(out):
+            mask = Image.open(self.tempimages.mask)
+            negated = Image.open(self.tempimages.negated)
+            neg = Image.open(self.tempimages.wal)
+            neg.paste(negated, mask=mask)
+            neg.save(out)
+
+    def inverse_negate(self):
+        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
+        if not os.path.exists(out):
+            mask = Image.open(self.tempimages.mask)
+            wal = Image.open(self.tempimages.wal)
+            invneg = Image.open(self.tempimages.negated)
+            invneg.paste(wal, mask=mask)
+            invneg.save(out)
+
+    def flip(self):
+        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
+        if not os.path.exists(out):
+            mask = Image.open(self.tempimages.mask)
+            shadow = Image.open(self.tempimages.shadow)
+            wal = Image.open(self.tempimages.wal)
+            flipped = Image.open(self.tempimages.flipped)
+            flipimg = ImageChops.multiply(wal, shadow)
+            flipimg.paste(flipped, mask=mask)
+            flipimg.save(out)
+
+    def color_overlay(self):
+        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
+        if not os.path.exists(out):
+            mask = Image.open(self.tempimages.mask)
+            shadow = Image.open(self.tempimages.shadow)
+            wal = Image.open(self.tempimages.wal)
+            blover = ImageChops.multiply(wal, shadow)
+            blover.paste(Image.new("RGB", wal.size, self.color), mask=mask)
+            blover.save(out)
+
+    def color_overlay_blur(self):
+        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
+        if not os.path.exists(out):
+            mask = Image.open(self.tempimages.mask)
+            shadow = Image.open(self.tempimages.shadow)
+            wal = Image.open(self.tempimages.blurred)
+            blover = ImageChops.multiply(wal, shadow)
+            blover.paste(Image.new("RGB", wal.size, self.color), mask=mask)
+            blover.save(out)
+
+    def pixelate(self):
+        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
+        if not os.path.exists(out):
+            mask = Image.open(self.tempimages.mask)
+            wal = Image.open(self.tempimages.wal)
+            pix = Image.open(self.tempimages.pixelated)
+            pix.paste(wal, mask=mask)
+            pix.save(out)
+
+    def inverse_pixelate(self):
+        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
+        if not os.path.exists(out):
+            mask = Image.open(self.tempimages.mask)
+            wal = Image.open(self.tempimages.wal)
+            pix = Image.open(self.tempimages.pixelated)
+            wal.paste(pix, mask=mask)
+            wal.save(out)
+
+    def render(self):
+        do = self.switch.get(self.method)
+        if hasattr(self, do) and callable(func := getattr(self, do)):
+            func()
 
 
 templist: list[TempMaskPointers] = []
@@ -92,166 +248,11 @@ def parse_arguments() -> Args:
     return _args
 
 
-def through_black(tempimages: TempImagePointers):
-    out = os.path.join(tempimages.args.outdir, "ThroughBlack", tempimages.maskname, tempimages.walname + ".jpg")
-    if not os.path.exists(out):
-        mask = Image.open(tempimages.mask)
-        wal = Image.open(tempimages.wal)
-        thrubl_image = Image.new("RGB", (wal.width, wal.height))
-        thrubl_image.paste(wal, mask=mask)
-        thrubl_image.save(out)
-
-
-def blur(tempimages: TempImagePointers):
-    out = os.path.join(tempimages.args.outdir, "Blur", tempimages.maskname, tempimages.walname + ".jpg")
-    if not os.path.exists(out):
-        mask = Image.open(tempimages.mask)
-        shadow = Image.open(tempimages.shadow)
-        blurred_dark = Image.open(tempimages.blurred_dark)
-        brightened = Image.open(tempimages.brightened)
-        blurred_image = ImageChops.multiply(blurred_dark, shadow)
-        blurred_image.paste(brightened, mask=mask)
-        blurred_image.save(out)
-
-
-def inverse_blur(tempimages: TempImagePointers):
-    out = os.path.join(tempimages.args.outdir, "InverseBlur", tempimages.maskname, tempimages.walname + ".jpg")
-    if not os.path.exists(out):
-        mask = Image.open(tempimages.mask)
-        shadow = Image.open(tempimages.shadow)
-        wal = Image.open(tempimages.wal)
-        blurred_dark = Image.open(tempimages.blurred_dark)
-        invblur = ImageChops.multiply(wal, shadow)
-        invblur.paste(blurred_dark, mask=mask)
-        invblur.save(out)
-
-
-def inverse_blur_darker(tempimages: TempImagePointers):
-    out = os.path.join(tempimages.args.outdir, "InverseBlurDarker", tempimages.maskname, tempimages.walname + ".jpg")
-    if not os.path.exists(out):
-        mask = Image.open(tempimages.mask)
-        shadow = Image.open(tempimages.shadow)
-        wal = Image.open(tempimages.wal)
-        blurred_darker = Image.open(tempimages.blurred_darker)
-        inblda_image = ImageChops.multiply(wal, shadow)
-        inblda_image.paste(blurred_darker, mask=mask)
-        inblda_image.save(out)
-
-
-def negate(tempimages: TempImagePointers):
-    out = os.path.join(tempimages.args.outdir, "Negate", tempimages.maskname, tempimages.walname + ".jpg")
-    if not os.path.exists(out):
-        mask = Image.open(tempimages.mask)
-        negated = Image.open(tempimages.negated)
-        neg = Image.open(tempimages.wal)
-        neg.paste(negated, mask=mask)
-        neg.save(out)
-
-
-def inverse_negate(tempimages: TempImagePointers):
-    out = os.path.join(tempimages.args.outdir, "InverseNegate", tempimages.maskname, tempimages.walname + ".jpg")
-    if not os.path.exists(out):
-        mask = Image.open(tempimages.mask)
-        wal = Image.open(tempimages.wal)
-        invneg = Image.open(tempimages.negated)
-        invneg.paste(wal, mask=mask)
-        invneg.save(out)
-
-
-def flip(tempimages: TempImagePointers):
-    out = os.path.join(tempimages.args.outdir, "Flip", tempimages.maskname, tempimages.walname + ".jpg")
-    if not os.path.exists(out):
-        mask = Image.open(tempimages.mask)
-        shadow = Image.open(tempimages.shadow)
-        wal = Image.open(tempimages.wal)
-        flipped = Image.open(tempimages.flipped)
-        flipimg = ImageChops.multiply(wal, shadow)
-        flipimg.paste(flipped, mask=mask)
-        flipimg.save(out)
-
-
-def black_overlay(tempimages: TempImagePointers):
-    out = os.path.join(tempimages.args.outdir, "BlackOverlay", tempimages.maskname, tempimages.walname + ".jpg")
-    if not os.path.exists(out):
-        mask = Image.open(tempimages.mask)
-        shadow = Image.open(tempimages.shadow)
-        wal = Image.open(tempimages.wal)
-        blover = ImageChops.multiply(wal, shadow)
-        blover.paste(Image.new("RGB", wal.size, (0, 0, 0)), mask=mask)
-        blover.save(out)
-
-
-def black_overlay_blur(tempimages: TempImagePointers):
-    out = os.path.join(tempimages.args.outdir, "BlackOverlayBlur", tempimages.maskname, tempimages.walname + ".jpg")
-    if not os.path.exists(out):
-        mask = Image.open(tempimages.mask)
-        shadow = Image.open(tempimages.shadow)
-        wal = Image.open(tempimages.blurred)
-        blover = ImageChops.multiply(wal, shadow)
-        blover.paste(Image.new("RGB", wal.size, (0, 0, 0)), mask=mask)
-        blover.save(out)
-
-
-def white_overlay(tempimages: TempImagePointers):
-    out = os.path.join(tempimages.args.outdir, "WhiteOverlay", tempimages.maskname, tempimages.walname + ".jpg")
-    if not os.path.exists(out):
-        mask = Image.open(tempimages.mask)
-        shadow = Image.open(tempimages.shadow)
-        wal = Image.open(tempimages.wal)
-        whover = ImageChops.multiply(wal, shadow)
-        whover.paste(Image.new("RGB", wal.size, (255, 255, 255)), mask=mask)
-        whover.save(out)
-
-
-def white_overlay_blur(tempimages: TempImagePointers):
-    out = os.path.join(tempimages.args.outdir, "WhiteOverlayBlur", tempimages.maskname, tempimages.walname + ".jpg")
-    if not os.path.exists(out):
-        mask = Image.open(tempimages.mask)
-        shadow = Image.open(tempimages.shadow)
-        wal = Image.open(tempimages.blurred)
-        whover = ImageChops.multiply(wal, shadow)
-        whover.paste(Image.new("RGB", wal.size, (255, 255, 255)), mask=mask)
-        whover.save(out)
-
-
-def pixelate(tempimages: TempImagePointers):
-    out = os.path.join(tempimages.args.outdir, "Pixelate", tempimages.maskname, tempimages.walname + ".jpg")
-    if not os.path.exists(out):
-        mask = Image.open(tempimages.mask)
-        wal = Image.open(tempimages.wal)
-        pix = Image.open(tempimages.pixelated)
-        pix.paste(wal, mask=mask)
-        pix.save(out)
-
-
-def inverse_pixelate(tempimages: TempImagePointers):
-    out = os.path.join(tempimages.args.outdir, "InversePixelate", tempimages.maskname, tempimages.walname + ".jpg")
-    if not os.path.exists(out):
-        mask = Image.open(tempimages.mask)
-        wal = Image.open(tempimages.wal)
-        pix = Image.open(tempimages.pixelated)
-        wal.paste(pix, mask=mask)
-        wal.save(out)
-
-
 def render(arguments: tuple[TempImagePointers, str]) -> None:
     tempimages, method = arguments
-    switch = {
-        "BlackOverlay": black_overlay(tempimages),
-        "BlackOverlayBlur": black_overlay_blur(tempimages),
-        "Blur": blur(tempimages),
-        "Flip": flip(tempimages),
-        "InverseBlur": inverse_blur(tempimages),
-        "InverseBlurDarker": inverse_blur_darker(tempimages),
-        "InverseNegate": inverse_negate(tempimages),
-        "InversePixelate": inverse_pixelate(tempimages),
-        "Negate": negate(tempimages),
-        "Pixelate": pixelate(tempimages),
-        "ThroughBlack": through_black(tempimages),
-        "WhiteOverlay": white_overlay(tempimages),
-        "WhiteOverlayBlur": white_overlay_blur(tempimages),
-    }
-    switch.get(method)
+    color = method.removesuffix("Overlay").removesuffix("OverlayBlur")
+    image = Render(tempimages, method, COLORS.get(color, None))
+    image.render()
 
 
 def create_mask_temps(arguments: tuple[str, tuple[int, int]]) -> TempMaskPointers:
@@ -286,140 +287,192 @@ def create_mask_temps(arguments: tuple[str, tuple[int, int]]) -> TempMaskPointer
     return pointers
 
 
-def create_effect_temps(arguments: tuple[ImageFile.ImageFile, str, str]) -> TempEffectPointers:
-    wal, walfile, walname = arguments
+def create_effect_temps(arguments: tuple[ImageFile.ImageFile, str, str, list[str]]) -> TempEffectPointers:
+    wal, walfile, walname, need_effects = arguments
     pointers = TempEffectPointers()
 
     pointers.wal = walfile
     pointers.walname = walname
     pointers.size = wal.size
+    pointers.walfile = os.path.basename(walfile)
 
-    if not os.path.exists(os.path.join(TEMPDIR, f"blurred_{walname}.jpg")):
-        blurred = wal.filter(filter=ImageFilter.GaussianBlur(radius=20))
-        blurred.save(os.path.join(TEMPDIR, f"blurred_{walname}.jpg"))
-        blurred.close()
-    pointers.blurred = os.path.join(TEMPDIR, f"blurred_{walname}.jpg")
+    if NEED_BLUR in "\t".join(need_effects):
+        if not os.path.exists(os.path.join(TEMPDIR, f"blurred_{walname}.jpg")):
+            blurred = wal.filter(filter=ImageFilter.GaussianBlur(radius=20))
+            blurred.save(os.path.join(TEMPDIR, f"blurred_{walname}.jpg"))
+            blurred.close()
+        pointers.blurred = os.path.join(TEMPDIR, f"blurred_{walname}.jpg")
+    else:
+        pointers.blurred = ""
 
-    if not os.path.exists(os.path.join(TEMPDIR, f"blurred_dark_{walname}.jpg")):
-        blurred_dark = wal.filter(filter=ImageFilter.GaussianBlur(radius=80))
-        darkened80 = ImageEnhance.Brightness(blurred_dark)
-        blurred_dark = darkened80.enhance(factor=0.8)
-        blurred_dark.save(os.path.join(TEMPDIR, f"blurred_dark_{walname}.jpg"))
-        blurred_dark.close()
-    pointers.blurred_dark = os.path.join(TEMPDIR, f"blurred_dark_{walname}.jpg")
+    if len(NEED_BLUR_DARK.intersection(need_effects)) > 0:
+        if not os.path.exists(os.path.join(TEMPDIR, f"blurred_dark_{walname}.jpg")):
+            blurred_dark = wal.filter(filter=ImageFilter.GaussianBlur(radius=80))
+            darkened80 = ImageEnhance.Brightness(blurred_dark)
+            blurred_dark = darkened80.enhance(factor=0.8)
+            blurred_dark.save(os.path.join(TEMPDIR, f"blurred_dark_{walname}.jpg"))
+            blurred_dark.close()
+        pointers.blurred_dark = os.path.join(TEMPDIR, f"blurred_dark_{walname}.jpg")
+    else:
+        pointers.blurred_dark = ""
 
-    if not os.path.exists(os.path.join(TEMPDIR, f"blurred_darker_{walname}.jpg")):
-        blurred_darker = wal.filter(filter=ImageFilter.GaussianBlur(radius=80))
-        darkened40 = ImageEnhance.Brightness(blurred_darker)
-        blurred_darker = darkened40.enhance(factor=0.4)
-        blurred_darker.save(os.path.join(TEMPDIR, f"blurred_darker_{walname}.jpg"))
-        blurred_darker.close()
-    pointers.blurred_darker = os.path.join(TEMPDIR, f"blurred_darker_{walname}.jpg")
+    if len(NEED_BLUR_DARKER.intersection(need_effects)) > 0:
+        if not os.path.exists(os.path.join(TEMPDIR, f"blurred_darker_{walname}.jpg")):
+            blurred_darker = wal.filter(filter=ImageFilter.GaussianBlur(radius=80))
+            darkened40 = ImageEnhance.Brightness(blurred_darker)
+            blurred_darker = darkened40.enhance(factor=0.4)
+            blurred_darker.save(os.path.join(TEMPDIR, f"blurred_darker_{walname}.jpg"))
+            blurred_darker.close()
+        pointers.blurred_darker = os.path.join(TEMPDIR, f"blurred_darker_{walname}.jpg")
+    else:
+        pointers.blurred_darker = ""
 
-    if not os.path.exists(os.path.join(TEMPDIR, f"brightened_{walname}.jpg")):
-        brightened = ImageEnhance.Brightness(wal)
-        brightened = brightened.enhance(factor=1.1)
-        brightened.save(os.path.join(TEMPDIR, f"brightened_{walname}.jpg"))
-        brightened.close()
-    pointers.brightened = os.path.join(TEMPDIR, f"brightened_{walname}.jpg")
+    if len(NEED_BRIGHTENED.intersection(need_effects)) > 0:
+        if not os.path.exists(os.path.join(TEMPDIR, f"brightened_{walname}.jpg")):
+            brightened = ImageEnhance.Brightness(wal)
+            brightened = brightened.enhance(factor=1.1)
+            brightened.save(os.path.join(TEMPDIR, f"brightened_{walname}.jpg"))
+            brightened.close()
+        pointers.brightened = os.path.join(TEMPDIR, f"brightened_{walname}.jpg")
+    else:
+        pointers.brightened = ""
 
-    if not os.path.exists(os.path.join(TEMPDIR, f"negated_{walname}.jpg")):
-        negated = ImageOps.invert(wal)
-        negated.save(os.path.join(TEMPDIR, f"negated_{walname}.jpg"))
-        negated.close()
-    pointers.negated = os.path.join(TEMPDIR, f"negated_{walname}.jpg")
+    if len(NEED_NEGATE.intersection(need_effects)) > 0:
+        if not os.path.exists(os.path.join(TEMPDIR, f"negated_{walname}.jpg")):
+            negated = ImageOps.invert(wal)
+            negated.save(os.path.join(TEMPDIR, f"negated_{walname}.jpg"))
+            negated.close()
+        pointers.negated = os.path.join(TEMPDIR, f"negated_{walname}.jpg")
+    else:
+        pointers.negated = ""
 
-    if not os.path.exists(os.path.join(TEMPDIR, f"flipped_{walname}.jpg")):
-        flipped = wal.transpose(method=Image.Transpose.FLIP_TOP_BOTTOM)
-        flipped.save(os.path.join(TEMPDIR, f"flipped_{walname}.jpg"))
-        flipped.close()
-    pointers.flipped = os.path.join(TEMPDIR, f"flipped_{walname}.jpg")
+    if len(NEED_FLIP.intersection(need_effects)) > 0:
+        if not os.path.exists(os.path.join(TEMPDIR, f"flipped_{walname}.jpg")):
+            flipped = wal.transpose(method=Image.Transpose.FLIP_TOP_BOTTOM)
+            flipped.save(os.path.join(TEMPDIR, f"flipped_{walname}.jpg"))
+            flipped.close()
+        pointers.flipped = os.path.join(TEMPDIR, f"flipped_{walname}.jpg")
+    else:
+        pointers.flipped = ""
 
-    if not os.path.exists(os.path.join(TEMPDIR, f"pixelated_{walname}.jpg")):
-        small = wal.resize((int(wal.width * 0.01), int(wal.height * 0.01)), Image.Resampling.BICUBIC)
-        darkenedsmall = ImageEnhance.Brightness(small)
-        darksmall = darkenedsmall.enhance(factor=0.8)
-        pixelated = darksmall.resize(wal.size, Image.Resampling.NEAREST)
-        pixelated.save(os.path.join(TEMPDIR, f"pixelated_{walname}.jpg"))
-        small.close()
-        darksmall.close()
-        pixelated.close()
-    pointers.pixelated = os.path.join(TEMPDIR, f"pixelated_{walname}.jpg")
+    if len(NEED_PIXELATE.intersection(need_effects)) > 0:
+        if not os.path.exists(os.path.join(TEMPDIR, f"pixelated_{walname}.jpg")):
+            small = wal.resize((int(wal.width * 0.01), int(wal.height * 0.01)), Image.Resampling.BICUBIC)
+            darkenedsmall = ImageEnhance.Brightness(small)
+            darksmall = darkenedsmall.enhance(factor=0.8)
+            pixelated = darksmall.resize(wal.size, Image.Resampling.NEAREST)
+            pixelated.save(os.path.join(TEMPDIR, f"pixelated_{walname}.jpg"))
+            small.close()
+            darksmall.close()
+            pixelated.close()
+        pointers.pixelated = os.path.join(TEMPDIR, f"pixelated_{walname}.jpg")
+    else:
+        pointers.pixelated = ""
 
     return pointers
 
 
 def main():
     svgs: list[str] = []
-    wallpapers: list[ImageFile.ImageFile] = []
-    effectlist: list[tuple[ImageFile.ImageFile, str, str]] = []
+    effectlist: list[tuple[ImageFile.ImageFile, str, str, list[str]]] = []
     masklist: set[tuple[str, tuple[int, int]]] = set()
-    need_wall_list: list[str] = []
-    need_svg_list: list[str] = []
-    need_method_list: list[str] = []
+    need_wall_list: set[str] = set()
+    need_svg_list: set[str] = set()
+    need_method_list: set[str] = set()
+
+    missing: dict[str, dict[str, list[str]]] = {}
+
+    for color in COLOR_OVERLAYS:
+        METHODS.append(f"{color}Overlay")
+        METHODS.append(f"{color}OverlayBlur")
 
     args = parse_arguments()
 
     try:
         svgs = sorted(os.listdir(args.svgdir))
         wallpaprs = sorted(os.listdir(args.wallpaperdir))
+        methods = sorted(METHODS)
         for wallpaper in tqdm(wallpaprs, desc="Checking for existing Wallpapers", unit="files", dynamic_ncols=True, ascii=True):
             walname = os.path.splitext(os.path.basename(wallpaper))[0]
             for svg in tqdm(svgs, desc=f"Checking for existing SVGs - {walname}", unit="files", dynamic_ncols=True, ascii=True):
                 svgname = os.path.splitext(os.path.basename(svg))[0]
-                for method in sorted(METHODS):
-                    # if not os.path.exists(os.path.join(args.outdir, method)):
-                    if method not in need_method_list:
-                        need_method_list.append(method)
-                        continue
+                for method in tqdm(methods, desc=f"Checking for existing methods - {svgname}", unit="files", dynamic_ncols=True, ascii=True):
                     if not os.path.exists(os.path.join(args.outdir, method, svgname, walname + ".jpg")):
-                        if walname not in need_wall_list:
-                            need_wall_list.append(walname)
-                        if svgname not in need_svg_list:
-                            need_svg_list.append(svgname)
+                        if not missing.get(wallpaper, False):
+                            missing[wallpaper] = {}
+                        if not missing[wallpaper].get(svg, False):
+                            missing[wallpaper][svg] = []
+                        if not method in missing[wallpaper][svg]:
+                            missing[wallpaper][svg].append(method)
+                        need_method_list.add(method)
+                        need_wall_list.add(wallpaper)
+                        need_svg_list.add(svg)
+
+        need_method_list = sorted(need_method_list)
+        need_wall_list = sorted(need_wall_list)
+        need_svg_list = sorted(need_svg_list)
 
         print(f"Temp Masks to be created: {len(need_svg_list)}")
-        print(need_svg_list)
+        print(", ".join(need_svg_list))
         print(f"Wallpapers needed: {len(need_wall_list)}")
-        print(need_wall_list)
+        print(", ".join(need_wall_list))
         print(f"Effects to be made: {len(need_method_list)}")
-        print(need_method_list)
+        print(", ".join(need_method_list))
 
-        for wallpaper in wallpaprs:
+        for wallpaper, v in missing.items():
+            wal = Image.open(os.path.join(args.wallpaperdir, wallpaper))
             walname = os.path.splitext(os.path.basename(wallpaper))[0]
-            if walname in need_wall_list:
-                wal = Image.open(os.path.join(args.wallpaperdir, wallpaper))
-                wallpapers.append(wal)
-
-        for wallpaper in wallpapers:
-            walname = os.path.splitext(os.path.basename(wallpaper.filename))[0]
-            if walname in need_wall_list:
-                effectlist.append((wallpaper, wallpaper.filename, walname))
-            else:
-                continue
-            for svg in svgs:
+            need_med = set()
+            for svg, v2 in v.items():
                 svgname = os.path.splitext(os.path.basename(svg))[0]
-                if svgname in need_svg_list:
-                    for method in sorted(METHODS):
-                        if not os.path.exists(os.path.join(args.outdir)):
-                            os.mkdir(os.path.join(args.outdir))
-                        if not os.path.exists(os.path.join(args.outdir, method)):
-                            os.mkdir(os.path.join(args.outdir, method))
-                        if not os.path.exists(os.path.join(args.outdir, method, svgname)):
-                            os.mkdir(os.path.join(args.outdir, method, svgname))
-                    masklist.add((svg, wallpaper.size))
+                masklist.add((svg, wal.size))
+                for method in v2:
+                    os.makedirs(os.path.join(args.outdir, method, svgname), exist_ok=True)
+                    need_med.add(method)
+            effectlist.append((wal, os.path.join(args.wallpaperdir, wallpaper), walname, sorted(need_med)))
 
+        # DEBUG
+        # for mask in tqdm(masklist, total=len(masklist), desc="Creating mask temporaries", unit="image", ascii=True, dynamic_ncols=True):
+        #     result = create_mask_temps(mask)
+        #     templist.append(result)
+
+        # PRODUCTION
         with Pool(os.cpu_count()) as pool:
             for result in tqdm(
                 pool.imap_unordered(create_mask_temps, masklist), total=len(masklist), desc="Creating mask temporaries", unit="image", ascii=True, dynamic_ncols=True
             ):
                 templist.append(result)
 
+        # DEBUG
+        # for effects in tqdm(effectlist, total=len(effectlist), desc="Creating effect temporaries", unit="image", ascii=True, dynamic_ncols=True):
+        #     result = create_effect_temps(effects)
+        #     for svg in missing[result.walfile].keys():
+        #         maskname = os.path.splitext(os.path.basename(svg))[0]
+        #         width, height = result.size
+        #         tmpname = f"{maskname}_{width}x{height}.png"
+        #         pointers = TempImagePointers()
+        #         pointers.blurred = result.blurred
+        #         pointers.blurred_dark = result.blurred_dark
+        #         pointers.blurred_darker = result.blurred_darker
+        #         pointers.brightened = result.brightened
+        #         pointers.flipped = result.flipped
+        #         pointers.mask = os.path.join(TEMPDIR, f"mask_{tmpname}")
+        #         pointers.maskname = maskname
+        #         pointers.negated = result.negated
+        #         pointers.pixelated = result.pixelated
+        #         pointers.shadow = os.path.join(TEMPDIR, f"shadow_{tmpname}")
+        #         pointers.wal = result.wal
+        #         pointers.walname = result.walname
+        #         pointers.args = args
+        #         for method in missing[result.walfile][svg]:
+        #             renderlist.append((pointers, method))
+
+        # PRODUCTION
         with Pool(os.cpu_count()) as pool:
             for result in tqdm(
                 pool.imap_unordered(create_effect_temps, effectlist), total=len(effectlist), desc="Creating effect temporaries", unit="image", ascii=True, dynamic_ncols=True
             ):
-                for svg in svgs:
+                for svg in missing[result.walfile].keys():
                     maskname = os.path.splitext(os.path.basename(svg))[0]
                     width, height = result.size
                     tmpname = f"{maskname}_{width}x{height}.png"
@@ -437,19 +490,16 @@ def main():
                     pointers.wal = result.wal
                     pointers.walname = result.walname
                     pointers.args = args
-                    for method in sorted(METHODS):
-                        arguments: tuple[TempImagePointers, str] = (pointers, method)
-                        renderlist.append(arguments)
+                    for method in missing[result.walfile][svg]:
+                        renderlist.append((pointers, method))
 
+        # DEBUG
+        # for renderi in tqdm(renderlist, total=len(renderlist), desc="Rendering wallpapers", unit="image", ascii=True, dynamic_ncols=True):
+        #     render(renderi)
+
+        # PRODUCTION
         with Pool(os.cpu_count()) as pool:
-            for _ in tqdm(
-                pool.imap_unordered(render, renderlist),
-                total=len(renderlist),
-                desc="Rendering wallpapers",
-                unit="image",
-                ascii=True,
-                dynamic_ncols=True,
-            ):
+            for _ in tqdm(pool.imap_unordered(render, renderlist), total=len(renderlist), desc="Rendering wallpapers", unit="image", ascii=True, dynamic_ncols=True):
                 pass
 
     finally:
