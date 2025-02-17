@@ -27,8 +27,6 @@ METHODS = [
     "ThroughBlack",
 ]
 
-COLOR_OVERLAYS = ["Black", "Red", "White"]
-
 NEED_BLUR = "OverlayBlur"
 NEED_BLUR_DARK = set(["Blur", "InverseBlur"])
 NEED_BLUR_DARKER = set(["InverseBlurDarker"])
@@ -38,8 +36,21 @@ NEED_NEGATE = set(["InverseNegate", "Negate"])
 NEED_PIXELATE = set(["InversePixelate", "Pixelate"])
 
 COLORS = {
+    "AerospaceOrange": "#FD5000",
+    "AmaranthPurple": "#AC1361",
+    "Amethyst": "#9B5DE5",
+    "Aquamarine": "#00F5D4",
     "Black": "#000000",
-    "Red": "#DA002D",
+    "BrilliantRose": "#F15BB5",
+    "CambridgeBlue": "#7DA27F",
+    "CancomRed": "#DA002D",
+    "DeepSkyBlue": "#00BBF9",
+    "Lion": "#AD9667",
+    "Maize": "#FEE440",
+    "MidnightGreen": "#115E6B",
+    "Sapphire": "#004EAA",
+    "SelectiveYellow": "#FFB92A",
+    "Tekhelet": "#592B8A",
     "White": "#FFFFFF",
 }
 
@@ -93,8 +104,6 @@ class Render:
     color: str
 
     switch = {
-        "BlackOverlay": "color_overlay",
-        "BlackOverlayBlur": "color_overlay_blur",
         "Blur": "blur",
         "Flip": "flip",
         "InverseBlur": "inverse_blur",
@@ -103,17 +112,17 @@ class Render:
         "InversePixelate": "inverse_pixelate",
         "Negate": "negate",
         "Pixelate": "pixelate",
-        "RedOverlay": "color_overlay",
-        "RedOverlayBlur": "color_overlay_blur",
         "ThroughBlack": "through_black",
-        "WhiteOverlay": "color_overlay",
-        "WhiteOverlayBlur": "color_overlay_blur",
     }
 
     def __init__(self, tempimages: TempImagePointers, method: str, color: str | None = None):
         self.tempimages = tempimages
         self.method = method
         self.color = color
+
+        for col in COLORS.keys():
+            self.switch[f"{col}Overlay"] = "color_overlay"
+            self.switch[f"{col}OverlayBlur"] = "color_overlay_blur"
 
     def through_black(self):
         out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
@@ -382,7 +391,7 @@ def main():
 
     missing: dict[str, dict[str, list[str]]] = {}
 
-    for color in COLOR_OVERLAYS:
+    for color in COLORS.keys():
         METHODS.append(f"{color}Overlay")
         METHODS.append(f"{color}OverlayBlur")
 
