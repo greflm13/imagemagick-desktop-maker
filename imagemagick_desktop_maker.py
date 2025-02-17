@@ -405,7 +405,7 @@ def main():
             walname = os.path.splitext(os.path.basename(wallpaper))[0]
             for svg in tqdm(svgs, desc=f"Checking for existing SVGs - {walname}", unit="files", dynamic_ncols=True, ascii=True):
                 svgname = os.path.splitext(os.path.basename(svg))[0]
-                for method in tqdm(methods, desc=f"Checking for existing methods - {svgname}", unit="files", dynamic_ncols=True, ascii=True):
+                for method in methods:
                     if not os.path.exists(os.path.join(args.outdir, method, svgname, walname + ".jpg")):
                         if not missing.get(wallpaper, False):
                             missing[wallpaper] = {}
