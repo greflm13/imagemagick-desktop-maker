@@ -50,7 +50,7 @@ COLORS = {
     "MidnightGreen": "#115E6B",
     "Sapphire": "#004EAA",
     "SelectiveYellow": "#FFB92A",
-    "SovietRed": "CC0000",
+    "SovietRed": "#CC0000",
     "Tekhelet": "#592B8A",
     "White": "#FFFFFF",
 }
