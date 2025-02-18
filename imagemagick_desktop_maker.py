@@ -222,8 +222,10 @@ class Render:
         if not os.path.exists(out):
             mask = Image.open(self.tempimages.mask)
             wal = Image.open(self.tempimages.wal)
-            trans = mask.getdata()
-            mask.putdata([(item[0], item[1], item[2], max(item[3], 128)) for item in trans])
+            trans = mask.convert("L")
+            data = mask.getdata(3)
+            trans.putdata([max(item, 127) for item in data])
+            mask.putalpha(trans)
             cover = Image.composite(wal, Image.new("RGB", wal.size, self.color), mask)
             cover.save(out)
 
