@@ -124,6 +124,7 @@ class Render:
         for col in COLORS.keys():
             self.switch[f"{col}Overlay"] = "color_overlay"
             self.switch[f"{col}OverlayBlur"] = "color_overlay_blur"
+            self.switch[f"{col}Through"] = "color_through"
 
     def through_black(self):
         out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
@@ -202,9 +203,9 @@ class Render:
             mask = Image.open(self.tempimages.mask)
             shadow = Image.open(self.tempimages.shadow)
             wal = Image.open(self.tempimages.wal)
-            blover = ImageChops.multiply(wal, shadow)
-            blover.paste(Image.new("RGB", wal.size, self.color), mask=mask)
-            blover.save(out)
+            cover = ImageChops.multiply(wal, shadow)
+            cover.paste(Image.new("RGB", wal.size, self.color), mask=mask)
+            cover.save(out)
 
     def color_overlay_blur(self):
         out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
@@ -212,9 +213,19 @@ class Render:
             mask = Image.open(self.tempimages.mask)
             shadow = Image.open(self.tempimages.shadow)
             wal = Image.open(self.tempimages.blurred)
-            blover = ImageChops.multiply(wal, shadow)
-            blover.paste(Image.new("RGB", wal.size, self.color), mask=mask)
-            blover.save(out)
+            cover = ImageChops.multiply(wal, shadow)
+            cover.paste(Image.new("RGB", wal.size, self.color), mask=mask)
+            cover.save(out)
+
+    def color_through(self):
+        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
+        if not os.path.exists(out):
+            mask = Image.open(self.tempimages.mask)
+            wal = Image.open(self.tempimages.wal)
+            trans = mask.getdata()
+            mask.putdata([(item[0], item[1], item[2], max(item[3], 128)) for item in trans])
+            cover = Image.composite(wal, Image.new("RGB", wal.size, self.color), mask)
+            cover.save(out)
 
     def pixelate(self):
         out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
@@ -260,7 +271,7 @@ def parse_arguments() -> Args:
 
 def render(arguments: tuple[TempImagePointers, str]) -> None:
     tempimages, method = arguments
-    color = method.removesuffix("Overlay").removesuffix("OverlayBlur")
+    color = method.removesuffix("Overlay").removesuffix("OverlayBlur").removesuffix("Through")
     image = Render(tempimages, method, COLORS.get(color, None))
     image.render()
 
@@ -395,6 +406,7 @@ def main():
     for color in COLORS.keys():
         METHODS.append(f"{color}Overlay")
         METHODS.append(f"{color}OverlayBlur")
+        METHODS.append(f"{color}Through")
 
     args = parse_arguments()
 
