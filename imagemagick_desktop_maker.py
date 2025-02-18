@@ -15,7 +15,7 @@ SVGDIR = os.path.join(SCRIPTDIR, "Svgs")
 WALLPAPERDIR = os.path.join(SCRIPTDIR, "Wallpapers")
 OUTDIR = os.path.join(SCRIPTDIR, "Render")
 TEMPDIR = tempfile.mkdtemp()
-METHODS = [
+STYLES = [
     "Blur",
     "Flip",
     "InverseBlur",
@@ -69,13 +69,10 @@ class TempImagePointers:
     brightened: str
     flipped: str
     mask: str
-    maskname: str
     negated: str
     pixelated: str
     shadow: str
     wal: str
-    walname: str
-    args: Args
 
 
 class TempMaskPointers:
@@ -101,7 +98,8 @@ class TempEffectPointers:
 
 class Render:
     tempimages: TempImagePointers
-    method: str
+    style: str
+    out: str
     color: str
 
     switch = {
@@ -116,110 +114,101 @@ class Render:
         "ThroughBlack": "through_black",
     }
 
-    def __init__(self, tempimages: TempImagePointers, method: str, color: str | None = None):
+    def __init__(self, tempimages: TempImagePointers, style: str, out: str, color: str | None = None):
         self.tempimages = tempimages
-        self.method = method
+        self.style = style
+        self.out = out
         self.color = color
 
         for col in COLORS.keys():
-            self.switch[f"{col}Overlay"] = "color_overlay"
-            self.switch[f"{col}OverlayBlur"] = "color_overlay_blur"
-            self.switch[f"{col}Through"] = "color_through"
+            self.switch[f"ColorOverlay/{col}"] = "color_overlay"
+            self.switch[f"ColorOverlayBlur/{col}"] = "color_overlay_blur"
+            self.switch[f"ColorThrough/{col}"] = "color_through"
 
     def through_black(self):
-        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
-        if not os.path.exists(out):
+        if not os.path.exists(self.out):
             mask = Image.open(self.tempimages.mask)
             wal = Image.open(self.tempimages.wal)
             thrubl_image = Image.new("RGB", (wal.width, wal.height))
             thrubl_image.paste(wal, mask=mask)
-            thrubl_image.save(out)
+            thrubl_image.save(self.out)
 
     def blur(self):
-        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
-        if not os.path.exists(out):
+        if not os.path.exists(self.out):
             mask = Image.open(self.tempimages.mask)
             shadow = Image.open(self.tempimages.shadow)
             blurred_dark = Image.open(self.tempimages.blurred_dark)
             brightened = Image.open(self.tempimages.brightened)
             blurred_image = ImageChops.multiply(blurred_dark, shadow)
             blurred_image.paste(brightened, mask=mask)
-            blurred_image.save(out)
+            blurred_image.save(self.out)
 
     def inverse_blur(self):
-        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
-        if not os.path.exists(out):
+        if not os.path.exists(self.out):
             mask = Image.open(self.tempimages.mask)
             shadow = Image.open(self.tempimages.shadow)
             wal = Image.open(self.tempimages.wal)
             blurred_dark = Image.open(self.tempimages.blurred_dark)
             invblur = ImageChops.multiply(wal, shadow)
             invblur.paste(blurred_dark, mask=mask)
-            invblur.save(out)
+            invblur.save(self.out)
 
     def inverse_blur_darker(self):
-        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
-        if not os.path.exists(out):
+        if not os.path.exists(self.out):
             mask = Image.open(self.tempimages.mask)
             shadow = Image.open(self.tempimages.shadow)
             wal = Image.open(self.tempimages.wal)
             blurred_darker = Image.open(self.tempimages.blurred_darker)
             inblda_image = ImageChops.multiply(wal, shadow)
             inblda_image.paste(blurred_darker, mask=mask)
-            inblda_image.save(out)
+            inblda_image.save(self.out)
 
     def negate(self):
-        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
-        if not os.path.exists(out):
+        if not os.path.exists(self.out):
             mask = Image.open(self.tempimages.mask)
             negated = Image.open(self.tempimages.negated)
             neg = Image.open(self.tempimages.wal)
             neg.paste(negated, mask=mask)
-            neg.save(out)
+            neg.save(self.out)
 
     def inverse_negate(self):
-        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
-        if not os.path.exists(out):
+        if not os.path.exists(self.out):
             mask = Image.open(self.tempimages.mask)
             wal = Image.open(self.tempimages.wal)
             invneg = Image.open(self.tempimages.negated)
             invneg.paste(wal, mask=mask)
-            invneg.save(out)
+            invneg.save(self.out)
 
     def flip(self):
-        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
-        if not os.path.exists(out):
+        if not os.path.exists(self.out):
             mask = Image.open(self.tempimages.mask)
             shadow = Image.open(self.tempimages.shadow)
             wal = Image.open(self.tempimages.wal)
             flipped = Image.open(self.tempimages.flipped)
             flipimg = ImageChops.multiply(wal, shadow)
             flipimg.paste(flipped, mask=mask)
-            flipimg.save(out)
+            flipimg.save(self.out)
 
     def color_overlay(self):
-        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
-        if not os.path.exists(out):
+        if not os.path.exists(self.out):
             mask = Image.open(self.tempimages.mask)
             shadow = Image.open(self.tempimages.shadow)
             wal = Image.open(self.tempimages.wal)
             cover = ImageChops.multiply(wal, shadow)
             cover.paste(Image.new("RGB", wal.size, self.color), mask=mask)
-            cover.save(out)
+            cover.save(self.out)
 
     def color_overlay_blur(self):
-        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
-        if not os.path.exists(out):
+        if not os.path.exists(self.out):
             mask = Image.open(self.tempimages.mask)
             shadow = Image.open(self.tempimages.shadow)
             wal = Image.open(self.tempimages.blurred)
             cover = ImageChops.multiply(wal, shadow)
             cover.paste(Image.new("RGB", wal.size, self.color), mask=mask)
-            cover.save(out)
+            cover.save(self.out)
 
     def color_through(self):
-        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
-        if not os.path.exists(out):
+        if not os.path.exists(self.out):
             mask = Image.open(self.tempimages.mask)
             wal = Image.open(self.tempimages.wal)
             trans = mask.convert("L")
@@ -227,28 +216,26 @@ class Render:
             trans.putdata([max(item, 127) for item in data])
             mask.putalpha(trans)
             cover = Image.composite(wal, Image.new("RGB", wal.size, self.color), mask)
-            cover.save(out)
+            cover.save(self.out)
 
     def pixelate(self):
-        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
-        if not os.path.exists(out):
+        if not os.path.exists(self.out):
             mask = Image.open(self.tempimages.mask)
             wal = Image.open(self.tempimages.wal)
             pix = Image.open(self.tempimages.pixelated)
             pix.paste(wal, mask=mask)
-            pix.save(out)
+            pix.save(self.out)
 
     def inverse_pixelate(self):
-        out = os.path.join(self.tempimages.args.outdir, self.method, self.tempimages.maskname, self.tempimages.walname + ".jpg")
-        if not os.path.exists(out):
+        if not os.path.exists(self.out):
             mask = Image.open(self.tempimages.mask)
             wal = Image.open(self.tempimages.wal)
             pix = Image.open(self.tempimages.pixelated)
             wal.paste(pix, mask=mask)
-            wal.save(out)
+            wal.save(self.out)
 
     def render(self):
-        do = self.switch.get(self.method)
+        do = self.switch.get(self.style)
         if hasattr(self, do) and callable(func := getattr(self, do)):
             func()
 
@@ -271,10 +258,10 @@ def parse_arguments() -> Args:
     return _args
 
 
-def render(arguments: tuple[TempImagePointers, str]) -> None:
-    tempimages, method = arguments
-    color = method.removesuffix("Overlay").removesuffix("OverlayBlur").removesuffix("Through")
-    image = Render(tempimages, method, COLORS.get(color, None))
+def render(arguments: tuple[TempImagePointers, str, str]) -> None:
+    tempimages, style, out = arguments
+    color = style.removeprefix("ColorOverlay/").removeprefix("ColorOverlayBlur/").removeprefix("ColorThrough/")
+    image = Render(tempimages, style, out, COLORS.get(color, None))
     image.render()
 
 
@@ -396,64 +383,64 @@ def create_effect_temps(arguments: tuple[ImageFile.ImageFile, str, str, list[str
 
 
 def main():
-    svgs: list[str] = []
+    motives: list[str] = []
     effectlist: list[tuple[ImageFile.ImageFile, str, str, list[str]]] = []
     masklist: set[tuple[str, tuple[int, int]]] = set()
-    need_wall_list: set[str] = set()
-    need_svg_list: set[str] = set()
-    need_method_list: set[str] = set()
+    need_img_list: set[str] = set()
+    need_motive_list: set[str] = set()
+    need_style_list: set[str] = set()
 
     missing: dict[str, dict[str, list[str]]] = {}
 
     for color in COLORS.keys():
-        METHODS.append(f"{color}Overlay")
-        METHODS.append(f"{color}OverlayBlur")
-        METHODS.append(f"{color}Through")
+        STYLES.append(f"ColorOverlay/{color}")
+        STYLES.append(f"ColorOverlayBlur/{color}")
+        STYLES.append(f"ColorThrough/{color}")
 
     args = parse_arguments()
 
     try:
-        svgs = sorted(os.listdir(args.svgdir))
-        wallpaprs = sorted(os.listdir(args.wallpaperdir))
-        methods = sorted(METHODS)
-        for wallpaper in tqdm(wallpaprs, desc="Checking for existing Wallpapers", unit="files", dynamic_ncols=True, ascii=True):
-            walname = os.path.splitext(os.path.basename(wallpaper))[0]
-            for svg in tqdm(svgs, desc=f"Checking for existing SVGs - {walname}", unit="files", dynamic_ncols=True, ascii=True):
-                svgname = os.path.splitext(os.path.basename(svg))[0]
-                for method in methods:
-                    if not os.path.exists(os.path.join(args.outdir, method, svgname, walname + ".jpg")):
-                        if not missing.get(wallpaper, False):
-                            missing[wallpaper] = {}
-                        if not missing[wallpaper].get(svg, False):
-                            missing[wallpaper][svg] = []
-                        if not method in missing[wallpaper][svg]:
-                            missing[wallpaper][svg].append(method)
-                        need_method_list.add(method)
-                        need_wall_list.add(wallpaper)
-                        need_svg_list.add(svg)
+        motives = sorted(os.listdir(args.svgdir))
+        imgs = sorted(os.listdir(args.wallpaperdir))
+        styles = sorted(STYLES)
+        for imgfilename in tqdm(imgs, desc="Checking for existing Wallpapers", unit="files", dynamic_ncols=True, ascii=True):
+            imgname = os.path.splitext(os.path.basename(imgfilename))[0]
+            for motivefile in tqdm(motives, desc=f"Checking for existing SVGs - {imgname}", unit="files", dynamic_ncols=True, ascii=True):
+                motive = os.path.splitext(os.path.basename(motivefile))[0]
+                for style in styles:
+                    if not os.path.exists(os.path.join(args.outdir, motive, imgname, style + ".jpg")):
+                        if not missing.get(imgfilename, False):
+                            missing[imgfilename] = {}
+                        if not missing[imgfilename].get(motivefile, False):
+                            missing[imgfilename][motivefile] = []
+                        if style not in missing[imgfilename][motivefile]:
+                            missing[imgfilename][motivefile].append(style)
+                        need_style_list.add(style)
+                        need_img_list.add(imgfilename)
+                        need_motive_list.add(motivefile)
 
-        need_method_list = sorted(need_method_list)
-        need_wall_list = sorted(need_wall_list)
-        need_svg_list = sorted(need_svg_list)
+        need_style_list = sorted(need_style_list)
+        need_img_list = sorted(need_img_list)
+        need_motive_list = sorted(need_motive_list)
 
-        print(f"Temp Masks to be created: {len(need_svg_list)}")
-        print(", ".join(need_svg_list))
-        print(f"Wallpapers needed: {len(need_wall_list)}")
-        print(", ".join(need_wall_list))
-        print(f"Effects to be made: {len(need_method_list)}")
-        print(", ".join(need_method_list))
+        print(f"Temp Masks to be created: {len(need_motive_list)}")
+        print(", ".join(need_motive_list))
+        print(f"Wallpapers needed: {len(need_img_list)}")
+        print(", ".join(need_img_list))
+        print(f"Styles to be made: {len(need_style_list)}")
+        print(", ".join(need_style_list))
 
-        for wallpaper, v in missing.items():
-            wal = Image.open(os.path.join(args.wallpaperdir, wallpaper))
-            walname = os.path.splitext(os.path.basename(wallpaper))[0]
-            need_med = set()
-            for svg, v2 in v.items():
-                svgname = os.path.splitext(os.path.basename(svg))[0]
-                masklist.add((svg, wal.size))
-                for method in v2:
-                    os.makedirs(os.path.join(args.outdir, method, svgname), exist_ok=True)
-                    need_med.add(method)
-            effectlist.append((wal, os.path.join(args.wallpaperdir, wallpaper), walname, sorted(need_med)))
+        for imgfilename, v in missing.items():
+            img = Image.open(os.path.join(args.wallpaperdir, imgfilename))
+            imgname = os.path.splitext(os.path.basename(imgfilename))[0]
+            need_style = set()
+            for motivefile, v2 in v.items():
+                motive = os.path.splitext(os.path.basename(motivefile))[0]
+                masklist.add((motivefile, img.size))
+                for style in v2:
+                    os.makedirs(os.path.join(args.outdir, motive, imgname), exist_ok=True)
+                    need_style.add(style)
+            effectlist.append((img, os.path.join(args.wallpaperdir, imgfilename), imgname, sorted(need_style)))
 
         # DEBUG
         # for mask in tqdm(masklist, total=len(masklist), desc="Creating mask temporaries", unit="image", ascii=True, dynamic_ncols=True):
@@ -470,10 +457,10 @@ def main():
         # DEBUG
         # for effects in tqdm(effectlist, total=len(effectlist), desc="Creating effect temporaries", unit="image", ascii=True, dynamic_ncols=True):
         #     result = create_effect_temps(effects)
-        #     for svg in missing[result.walfile].keys():
-        #         maskname = os.path.splitext(os.path.basename(svg))[0]
+        #     for motivefile in missing[result.walfile].keys():
+        #         motive = os.path.splitext(os.path.basename(motivefile))[0]
         #         width, height = result.size
-        #         tmpname = f"{maskname}_{width}x{height}.png"
+        #         tmpname = f"{motive}_{width}x{height}.png"
         #         pointers = TempImagePointers()
         #         pointers.blurred = result.blurred
         #         pointers.blurred_dark = result.blurred_dark
@@ -481,25 +468,27 @@ def main():
         #         pointers.brightened = result.brightened
         #         pointers.flipped = result.flipped
         #         pointers.mask = os.path.join(TEMPDIR, f"mask_{tmpname}")
-        #         pointers.maskname = maskname
         #         pointers.negated = result.negated
         #         pointers.pixelated = result.pixelated
         #         pointers.shadow = os.path.join(TEMPDIR, f"shadow_{tmpname}")
         #         pointers.wal = result.wal
-        #         pointers.walname = result.walname
-        #         pointers.args = args
-        #         for method in missing[result.walfile][svg]:
-        #             renderlist.append((pointers, method))
+        #         for style in missing[result.walfile][motivefile]:
+        #             if "/" in style:
+        #                 parts = style.split("/")
+        #                 out = os.path.join(args.outdir, motive, result.walname, parts[1] + parts[0].removeprefix("Color") + ".jpg")
+        #             else:
+        #                 out = os.path.join(args.outdir, motive, result.walname, style + ".jpg")
+        #             renderlist.append((pointers, style, out))
 
         # PRODUCTION
         with Pool(os.cpu_count()) as pool:
             for result in tqdm(
                 pool.imap_unordered(create_effect_temps, effectlist), total=len(effectlist), desc="Creating effect temporaries", unit="image", ascii=True, dynamic_ncols=True
             ):
-                for svg in missing[result.walfile].keys():
-                    maskname = os.path.splitext(os.path.basename(svg))[0]
+                for motivefile in missing[result.walfile].keys():
+                    motive = os.path.splitext(os.path.basename(motivefile))[0]
                     width, height = result.size
-                    tmpname = f"{maskname}_{width}x{height}.png"
+                    tmpname = f"{motive}_{width}x{height}.png"
                     pointers = TempImagePointers()
                     pointers.blurred = result.blurred
                     pointers.blurred_dark = result.blurred_dark
@@ -507,15 +496,17 @@ def main():
                     pointers.brightened = result.brightened
                     pointers.flipped = result.flipped
                     pointers.mask = os.path.join(TEMPDIR, f"mask_{tmpname}")
-                    pointers.maskname = maskname
                     pointers.negated = result.negated
                     pointers.pixelated = result.pixelated
                     pointers.shadow = os.path.join(TEMPDIR, f"shadow_{tmpname}")
                     pointers.wal = result.wal
-                    pointers.walname = result.walname
-                    pointers.args = args
-                    for method in missing[result.walfile][svg]:
-                        renderlist.append((pointers, method))
+                    for style in missing[result.walfile][motivefile]:
+                        if "/" in style:
+                            parts = style.split("/")
+                            out = os.path.join(args.outdir, motive, result.walname, parts[1] + parts[0].removeprefix("Color") + ".jpg")
+                        else:
+                            out = os.path.join(args.outdir, motive, result.walname, style + ".jpg")
+                        renderlist.append((pointers, style, out))
 
         # DEBUG
         # for renderi in tqdm(renderlist, total=len(renderlist), desc="Rendering wallpapers", unit="image", ascii=True, dynamic_ncols=True):
