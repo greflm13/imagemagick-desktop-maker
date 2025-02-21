@@ -408,7 +408,12 @@ def main():
             for motivefile in tqdm(motives, desc=f"Checking for existing SVGs - {imgname}", unit="files", dynamic_ncols=True, ascii=True):
                 motive = os.path.splitext(os.path.basename(motivefile))[0]
                 for style in styles:
-                    if not os.path.exists(os.path.join(args.outdir, motive, imgname, style + ".jpg")):
+                    if "/" in style:
+                        parts = style.split("/")
+                        out = os.path.join(args.outdir, motive, imgname, parts[1] + parts[0].removeprefix("Color") + ".jpg")
+                    else:
+                        out = os.path.join(args.outdir, motive,imgname, style + ".jpg")
+                    if not os.path.exists(out):
                         if not missing.get(imgfilename, False):
                             missing[imgfilename] = {}
                         if not missing[imgfilename].get(motivefile, False):
