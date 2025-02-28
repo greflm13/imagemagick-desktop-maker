@@ -44,7 +44,6 @@ COLORS = {
     "Black": "#000000",
     "BrilliantRose": "#F15BB5",
     "CambridgeBlue": "#7DA27F",
-    "CancomRed": "#DA002D",
     "DebianRed": "#A80030",
     "DeepSkyBlue": "#00BBF9",
     "EndeavourPurple": "#7E3EBE",
