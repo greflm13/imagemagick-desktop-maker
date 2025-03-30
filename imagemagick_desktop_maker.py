@@ -39,6 +39,7 @@ COLORS = {
     "AerospaceOrange": "#FD5000",
     "AmaranthPurple": "#AC1361",
     "Amethyst": "#9B5DE5",
+    "AnexiaBlue": "#003CA6",
     "Aquamarine": "#00F5D4",
     "ArchBlue": "#0F94D2",
     "Black": "#000000",
