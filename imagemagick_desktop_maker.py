@@ -139,7 +139,7 @@ class Render:
             wal = Image.open(self.tempimages.wal)
             thrubl_image = Image.new("RGB", (wal.width, wal.height))
             thrubl_image.paste(wal, mask=mask)
-            thrubl_image.save(self.out)
+            thrubl_image.save(self.out, format='JPEG', subsampling=0, quality=100)
 
     def blur(self):
         if not os.path.exists(self.out):
@@ -149,7 +149,7 @@ class Render:
             brightened = Image.open(self.tempimages.brightened)
             blurred_image = ImageChops.multiply(blurred_dark, shadow)
             blurred_image.paste(brightened, mask=mask)
-            blurred_image.save(self.out)
+            blurred_image.save(self.out, format='JPEG', subsampling=0, quality=100)
 
     def inverse_blur(self):
         if not os.path.exists(self.out):
@@ -159,7 +159,7 @@ class Render:
             blurred_dark = Image.open(self.tempimages.blurred_dark)
             invblur = ImageChops.multiply(wal, shadow)
             invblur.paste(blurred_dark, mask=mask)
-            invblur.save(self.out)
+            invblur.save(self.out, format='JPEG', subsampling=0, quality=100)
 
     def inverse_blur_darker(self):
         if not os.path.exists(self.out):
@@ -169,7 +169,7 @@ class Render:
             blurred_darker = Image.open(self.tempimages.blurred_darker)
             inblda_image = ImageChops.multiply(wal, shadow)
             inblda_image.paste(blurred_darker, mask=mask)
-            inblda_image.save(self.out)
+            inblda_image.save(self.out, format='JPEG', subsampling=0, quality=100)
 
     def negate(self):
         if not os.path.exists(self.out):
@@ -177,7 +177,7 @@ class Render:
             negated = Image.open(self.tempimages.negated)
             neg = Image.open(self.tempimages.wal)
             neg.paste(negated, mask=mask)
-            neg.save(self.out)
+            neg.save(self.out, format='JPEG', subsampling=0, quality=100)
 
     def inverse_negate(self):
         if not os.path.exists(self.out):
@@ -185,7 +185,7 @@ class Render:
             wal = Image.open(self.tempimages.wal)
             invneg = Image.open(self.tempimages.negated)
             invneg.paste(wal, mask=mask)
-            invneg.save(self.out)
+            invneg.save(self.out, format='JPEG', subsampling=0, quality=100)
 
     def flip(self):
         if not os.path.exists(self.out):
@@ -195,7 +195,7 @@ class Render:
             flipped = Image.open(self.tempimages.flipped)
             flipimg = ImageChops.multiply(wal, shadow)
             flipimg.paste(flipped, mask=mask)
-            flipimg.save(self.out)
+            flipimg.save(self.out, format='JPEG', subsampling=0, quality=100)
 
     def color_overlay(self):
         if not os.path.exists(self.out):
@@ -204,7 +204,7 @@ class Render:
             wal = Image.open(self.tempimages.wal)
             cover = ImageChops.multiply(wal, shadow)
             cover.paste(Image.new("RGB", wal.size, self.color), mask=mask)
-            cover.save(self.out)
+            cover.save(self.out, format='JPEG', subsampling=0, quality=100)
 
     def color_overlay_blur(self):
         if not os.path.exists(self.out):
@@ -213,7 +213,7 @@ class Render:
             wal = Image.open(self.tempimages.blurred)
             cover = ImageChops.multiply(wal, shadow)
             cover.paste(Image.new("RGB", wal.size, self.color), mask=mask)
-            cover.save(self.out)
+            cover.save(self.out, format='JPEG', subsampling=0, quality=100)
 
     def color_through(self):
         if not os.path.exists(self.out):
@@ -224,7 +224,7 @@ class Render:
             trans.putdata([max(item, 127) for item in data])
             mask.putalpha(trans)
             cover = Image.composite(wal, Image.new("RGB", wal.size, self.color), mask)
-            cover.save(self.out)
+            cover.save(self.out, format='JPEG', subsampling=0, quality=100)
 
     def pixelate(self):
         if not os.path.exists(self.out):
@@ -232,7 +232,7 @@ class Render:
             wal = Image.open(self.tempimages.wal)
             pix = Image.open(self.tempimages.pixelated)
             pix.paste(wal, mask=mask)
-            pix.save(self.out)
+            pix.save(self.out, format='JPEG', subsampling=0, quality=100)
 
     def inverse_pixelate(self):
         if not os.path.exists(self.out):
@@ -240,7 +240,7 @@ class Render:
             wal = Image.open(self.tempimages.wal)
             pix = Image.open(self.tempimages.pixelated)
             wal.paste(pix, mask=mask)
-            wal.save(self.out)
+            wal.save(self.out, format='JPEG', subsampling=0, quality=100)
 
     def render(self):
         do = self.switch.get(self.style)
