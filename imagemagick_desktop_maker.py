@@ -443,8 +443,11 @@ def main():
         print(f"Styles to be made: {len(need_style_list)}")
         print(", ".join(need_style_list))
 
+        for img in need_img_list:
+            shutil.copyfile(os.path.join(args.wallpaperdir, imgfilename), os.path.join(TEMPDIR, imgfilename))
+
         for imgfilename, v in missing.items():
-            img = Image.open(os.path.join(args.wallpaperdir, imgfilename))
+            img = Image.open(os.path.join(TEMPDIR, imgfilename))
             imgname = os.path.splitext(os.path.basename(imgfilename))[0]
             need_style = set()
             for motivefile, v2 in v.items():
@@ -453,7 +456,7 @@ def main():
                 for style in v2:
                     os.makedirs(os.path.join(args.outdir, motive, imgname), exist_ok=True)
                     need_style.add(style)
-            effectlist.append((img, os.path.join(args.wallpaperdir, imgfilename), imgname, sorted(need_style)))
+            effectlist.append((img, os.path.join(TEMPDIR, imgfilename), imgname, sorted(need_style)))
 
         # DEBUG
         # for mask in tqdm(masklist, total=len(masklist), desc="Creating mask temporaries", unit="image", ascii=True, dynamic_ncols=True):
