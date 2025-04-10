@@ -443,7 +443,7 @@ def main():
         print(f"Styles to be made: {len(need_style_list)}")
         print(", ".join(need_style_list))
 
-        for imgfilename, v in missing.items():
+        for imgfilename, v in tqdm(missing.items(), desc="Copying Wallpapers to temp dir", unit="files", dynamic_ncols=True, ascii=True):
             shutil.copyfile(os.path.join(args.wallpaperdir, imgfilename), os.path.join(TEMPDIR, imgfilename))
             img = Image.open(os.path.join(TEMPDIR, imgfilename))
             imgname = os.path.splitext(os.path.basename(imgfilename))[0]
