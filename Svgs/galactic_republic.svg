@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="7030.000000pt"
+   height="4686.000000pt"
+   viewBox="0 0 7030.000000 4686.000000"
+   version="1.1"
+   id="svg6"
+   sodipodi:docname="galactic_republic.svg"
+   inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs6" />
+  <sodipodi:namedview
+     id="namedview6"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="pt"
+     inkscape:zoom="0.096991037"
+     inkscape:cx="4608.6733"
+     inkscape:cy="4175.6436"
+     inkscape:window-width="2560"
+     inkscape:window-height="1416"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg6" />
+  <g
+     id="g6"
+     transform="matrix(2.5,0,0,2.5,2765,1593)">
+    <circle
+       fill="none"
+       stroke="#000000"
+       stroke-width="31.8518"
+       cx="300"
+       cy="300"
+       r="284.0741"
+       id="circle1" />
+    <circle
+       cx="300"
+       cy="300"
+       r="93.212196"
+       id="circle2" />
+    <g
+       id="Half">
+      <g
+         id="Elmt">
+        <path
+           d="M 164.331,122.014 A 223.797,223.797 0 0 1 270.077,78.2125 V 48.1605 A 253.611,253.611 0 0 0 143.081,100.764 Z"
+           id="path2" />
+        <path
+           fill="none"
+           stroke="#000000"
+           stroke-width="38.881"
+           d="M 300,300 V 487.968"
+           id="path3" />
+      </g>
+      <use
+         xlink:href="#Elmt"
+         transform="rotate(45,300,300)"
+         id="use3" />
+      <use
+         xlink:href="#Elmt"
+         transform="rotate(90,300,300)"
+         id="use4" />
+      <use
+         xlink:href="#Elmt"
+         transform="rotate(135,300,300)"
+         id="use5" />
+    </g>
+    <use
+       xlink:href="#Half"
+       transform="rotate(180,300,300)"
+       id="use6" />
+  </g>
+</svg>

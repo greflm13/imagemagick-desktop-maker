@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   id="Ebene_1"
+   version="1.1"
+   viewBox="0 0 7030.000000 4687.000000"
+   sodipodi:docname="knapp.svg"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview21"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="0.093323516"
+     inkscape:cx="4307.5959"
+     inkscape:cy="3262.8432"
+     inkscape:window-width="1920"
+     inkscape:window-height="995"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Ebene_1"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
+  <!-- Generator: Adobe Illustrator 29.3.1, SVG Export Plug-In . SVG Version: 2.1.0 Build 151)  -->
+  <defs
+     id="defs4">
+    <style
+       id="style2">
+                        .st0, .st1 {
+                        fill: #1d1d1b;
+                        }
+
+                        .st1 {
+                        fill-rule: evenodd;
+                        }
+                </style>
+  </defs>
+  <g
+     id="g30"
+     transform="matrix(2.4949706,0,0,2.4949706,2553.6878,2037.1176)"
+     style="fill:#000000;fill-opacity:1">
+    <polygon
+       class="st1"
+       points="55.1,109.5 116.2,192.5 91.8,192.5 42.1,121.8 19.3,144.1 19.3,192.5 0.8,192.5 0.8,52.9 19.3,52.9 19.3,122.1 88.6,52.9 113.7,52.9 "
+       id="polygon6"
+       style="fill:#000000;fill-opacity:1" />
+    <polygon
+       class="st1"
+       points="268.4,192.5 249.5,192.5 176.1,82.8 176.1,192.5 158.4,192.5 158.4,52.9 177.4,52.9 250.7,162.5 250.7,52.9 268.4,52.9 "
+       id="polygon8"
+       style="fill:#000000;fill-opacity:1" />
+    <path
+       class="st1"
+       d="M 506.8,192.5 V 52.9 h 52.7 c 9.3,0 16.4,0.4 21.2,1.3 6.9,1.1 12.6,3.3 17.2,6.6 4.6,3.2 8.3,7.7 11.1,13.4 2.9,5.8 4.3,12.1 4.3,19.1 0,11.9 -3.8,21.9 -11.3,30.2 -7.6,8.2 -21.2,12.3 -41,12.3 h -35.8 v 56.8 h -18.5 z m 18.5,-73.2 h 36.1 c 11.9,0 20.4,-2.2 25.4,-6.7 5,-4.4 7.5,-10.7 7.5,-18.8 0,-5.8 -1.5,-10.8 -4.5,-15 -2.9,-4.2 -6.8,-7 -11.6,-8.3 -3.1,-0.8 -8.9,-1.2 -17.2,-1.2 h -35.7 v 49.9 z"
+       id="path10"
+       style="fill:#000000;fill-opacity:1" />
+    <path
+       class="st1"
+       d="M 663.9,192.5 V 52.9 h 52.7 c 9.3,0 16.4,0.4 21.2,1.3 6.9,1.1 12.6,3.3 17.2,6.6 4.6,3.2 8.3,7.7 11.1,13.4 2.9,5.8 4.3,12.1 4.3,19.1 0,11.9 -3.8,21.9 -11.3,30.2 -7.6,8.2 -21.2,12.3 -41,12.3 h -35.8 v 56.8 h -18.5 z m 18.5,-73.2 h 36.1 c 11.9,0 20.4,-2.2 25.4,-6.7 5,-4.4 7.5,-10.7 7.5,-18.8 0,-5.8 -1.5,-10.8 -4.5,-15 -2.9,-4.2 -6.8,-7 -11.6,-8.3 -3.1,-0.8 -8.9,-1.2 -17.2,-1.2 h -35.7 v 49.9 z"
+       id="path12"
+       style="fill:#000000;fill-opacity:1" />
+    <path
+       class="st0"
+       d="M 379.1,65.9 305.8,192.8 H 466.4 L 386.1,53.7 Z m 7.1,20.3 c 9.9,17.2 42.2,73.2 52.1,90.3 H 334 c 9.9,-17.2 42.2,-73.2 52.1,-90.3"
+       id="path14"
+       style="fill:#000000;fill-opacity:1" />
+    <rect
+       class="st0"
+       x="0.1"
+       y="209"
+       width="770.5"
+       height="36.599998"
+       id="rect16"
+       style="fill:#000000;fill-opacity:1" />
+    <rect
+       class="st0"
+       width="770.5"
+       height="36.599998"
+       id="rect18"
+       x="0"
+       y="0"
+       style="fill:#000000;fill-opacity:1" />
+  </g>
+</svg>
