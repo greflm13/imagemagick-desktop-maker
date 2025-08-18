@@ -56,7 +56,7 @@ COLORS = {
     # "DeepSkyBlue": "#00BBF9",
     "EndeavourPurple": "#7E3EBE",
     "FedoraBlue": "#51A2DA",
-    "KnappYellow": "#FFEB00",
+    "KnappBlue": "#029AA9",
     # "Lion": "#AD9667",
     # "Maize": "#FEE440",
     "ManjaroGreen": "#35BFA4",
