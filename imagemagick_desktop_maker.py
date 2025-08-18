@@ -62,12 +62,15 @@ COLORS = {
     "ManjaroGreen": "#35BFA4",
     # "MidnightGreen": "#115E6B",
     "MintGreen": "#69B53F",
+    "Nachtblau": "#222D5A",
     # "Sapphire": "#004EAA",
     # "SelectiveYellow": "#FFB92A",
     "SovietRed": "#CC0000",
     "SuseGreen": "#30BA78",
+    "Tannengrün": "#27352A",
     # "Tekhelet": "#592B8A",
     "UbuntuOrange": "#E95420",
+    "Verkehrsrot": "#BB1F11",
     "White": "#FFFFFF",
 }
 
