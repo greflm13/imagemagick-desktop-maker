@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="7030.000000pt"
+   height="4686.000000pt"
+   viewBox="0 0 7030.000000 4686.000000"
+   style="clip-rule:evenodd;fill-rule:evenodd;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
+   version="1.1"
+   xml:space="preserve"
+   id="svg2"
+   sodipodi:docname="pflatsch.svg"
+   inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+   id="namedview2"
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1.0"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:document-units="pt"
+   inkscape:zoom="0.13716604"
+   inkscape:cx="4425.2936"
+   inkscape:cy="2930.7546"
+   inkscape:window-width="2560"
+   inkscape:window-height="1416"
+   inkscape:window-x="0"
+   inkscape:window-y="0"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="svg2" />
+<title
+   id="title1">ÖBB Pflatsch logo</title>
+ <defs
+   id="defs1">
+  <style
+   type="text/css"
+   id="style1">
+   <![CDATA[
+    .fil0 {fill:#DD411A}
+   ]]>
+  </style>
+ </defs>
+   
+   <g
+   id="g2"
+   transform="matrix(0.75063251,0,0,0.75063251,3500.5319,2334.0344)"
+   style="fill:#000000;fill-opacity:1"><path
+     class="fil0"
+     d="m 1013.1077,-262.15737 -994.221568,-0.003 c -151.290842,0 -274.015062,122.72423 -274.015062,274.015066 0,51.782375 14.38687,100.198894 39.3546,141.538494 H -1002.176 c -6.3563,-46.26756 -9.6401,-93.553494 -9.6401,-141.538494 0,-569.174596 461.55352,-1030.469296 1030.469212,-1030.469296 v 0 H 1681.7304 l -669.6324,756.71315 z"
+     id="path1"
+     style="stroke-width:86.304;fill:#000000;fill-opacity:1" /><path
+     class="fil0"
+     d="m -974.55872,286.04537 994.221588,0.003 c 151.290842,0 274.015062,-122.72423 274.015062,-274.015066 0,-51.782375 -14.38687,-100.198895 -39.3546,-141.538494 H 1040.725 c 6.3563,46.267555 9.6401,93.553494 9.6401,141.538494 0,569.174596 -461.55352,1030.469296 -1030.469212,1030.469296 v 0 H -1643.1814 l 669.63244,-756.71315 z"
+     id="path2"
+     style="stroke-width:86.304;fill:#000000;fill-opacity:1" /></g>
+</svg>
