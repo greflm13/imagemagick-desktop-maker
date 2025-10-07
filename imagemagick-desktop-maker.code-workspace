@@ -1,26 +1,33 @@
 {
-    "folders": [
-        {
-            "path": "./",
-            "name": "Imagemagick desktop maker"
-        }
-    ],
-    "settings": {
-        "files.associations": {},
-        "python.analysis.inlayHints.callArgumentNames": "off",
-        "python.analysis.inlayHints.functionReturnTypes": false,
-        "python.analysis.inlayHints.variableTypes": false,
-        "editor.formatOnSave": false,
-        "[python]": {
-            "editor.defaultFormatter": "charliermarsh.ruff"
-        }
-    },
-    "extensions": {
-        "recommendations": [
-            "ms-python.python",
-            "ms-python.vscode-pylance",
-            "ms-python.debugpy",
-            "charliermarsh.ruff",
-        ]
+  "folders": [
+    {
+      "path": "./",
+      "name": "Imagemagick desktop maker"
     }
+  ],
+  "settings": {
+    "files.associations": {},
+    "python.analysis.inlayHints.callArgumentNames": "off",
+    "python.analysis.inlayHints.functionReturnTypes": false,
+    "python.analysis.inlayHints.variableTypes": false,
+    "editor.formatOnSave": false,
+    "[python]": {
+      "editor.defaultFormatter": "charliermarsh.ruff"
+    },
+    "python-envs.pythonProjects": [
+      {
+        "path": "",
+        "envManager": "ms-python.python:pyenv",
+        "packageManager": "ms-python.python:pip"
+      }
+    ]
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-python.debugpy",
+      "charliermarsh.ruff"
+    ]
+  }
 }

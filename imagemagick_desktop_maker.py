@@ -48,29 +48,29 @@ COLORS = {
     # "Amethyst": "#9B5DE5",
     # "AnexiaBlue": "#003CA6",
     # "Aquamarine": "#00F5D4",
-    "ArchBlue": "#0F94D2",
+    # "ArchBlue": "#0F94D2",
     "Black": "#000000",
     # "BrilliantRose": "#F15BB5",
     # "CambridgeBlue": "#7DA27F",
-    "DebianRed": "#A80030",
+    # "DebianRed": "#A80030",
     # "DeepSkyBlue": "#00BBF9",
-    "EndeavourPurple": "#7E3EBE",
-    "FedoraBlue": "#51A2DA",
-    "KnappBlue": "#029AA9",
+    # "EndeavourPurple": "#7E3EBE",
+    # "FedoraBlue": "#51A2DA",
+    # "KnappBlue": "#029AA9",
     # "Lion": "#AD9667",
     # "Maize": "#FEE440",
-    "ManjaroGreen": "#35BFA4",
+    # "ManjaroGreen": "#35BFA4",
     # "MidnightGreen": "#115E6B",
-    "MintGreen": "#69B53F",
-    "Nachtblau": "#222D5A",
+    # "MintGreen": "#69B53F",
+    # "Nachtblau": "#222D5A",
     # "Sapphire": "#004EAA",
     # "SelectiveYellow": "#FFB92A",
-    "SovietRed": "#CC0000",
-    "SuseGreen": "#30BA78",
-    "Tannengrün": "#27352A",
+    # "SovietRed": "#CC0000",
+    # "SuseGreen": "#30BA78",
+    # "Tannengrün": "#27352A",
     # "Tekhelet": "#592B8A",
-    "UbuntuOrange": "#E95420",
-    "Verkehrsrot": "#BB1F11",
+    # "UbuntuOrange": "#E95420",
+    # "Verkehrsrot": "#BB1F11",
     "White": "#FFFFFF",
 }
 
@@ -571,7 +571,10 @@ def main():
         imgs = sorted(os.listdir(args.wallpaperdir))
         styles = sorted(STYLES)
         for imgfilename in tqdm(imgs, desc="Checking for existing Wallpapers", unit="files", dynamic_ncols=True, ascii=True):
-            imgname = os.path.splitext(os.path.basename(imgfilename))[0]
+            imgname, ext = os.path.splitext(os.path.basename(imgfilename))
+            if ext not in [".jpg", ".jpeg", ".png"]:
+                logger.warning("skipping unsupported image file", extra={"file": imgfilename})
+                continue
             for motivefile in tqdm(motives, desc=f"Checking for existing SVGs - {imgname}", unit="files", dynamic_ncols=True, ascii=True):
                 motive = os.path.splitext(os.path.basename(motivefile))[0]
                 for style in styles:
