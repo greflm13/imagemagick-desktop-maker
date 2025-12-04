@@ -119,7 +119,7 @@ class Render:
     tempimages: TempImagePointers
     style: str
     out: str
-    color: str
+    color: str | None = None
 
     switch = {
         "Blur": "blur",
@@ -254,13 +254,13 @@ class Render:
             wal.save(self.out, format="JPEG", subsampling=0, quality=100)
 
     def render(self):
-        do = self.switch.get(self.style)
+        do = self.switch.get(self.style, "")
         if hasattr(self, do) and callable(func := getattr(self, do)):
             func()
 
 
 templist: list[TempMaskPointers] = []
-renderlist: list[tuple[TempImagePointers, str]] = []
+renderlist: list[tuple[TempImagePointers, str, str]] = []
 
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
@@ -553,9 +553,9 @@ def main():
     motives: list[str] = []
     effectlist: list[tuple[ImageFile.ImageFile, str, str, list[str]]] = []
     masklist: set[tuple[str, tuple[int, int]]] = set()
-    need_img_list: set[str] = set()
-    need_motive_list: set[str] = set()
-    need_style_list: set[str] = set()
+    need_img_list = set()
+    need_motive_list = set()
+    need_style_list = set()
 
     missing: dict[str, dict[str, list[str]]] = {}
 
