@@ -29,5 +29,26 @@
       "ms-python.debugpy",
       "charliermarsh.ruff"
     ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Python: Current File",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "imagemagick_desktop_maker.py",
+        "console": "integratedTerminal",
+        "args": [
+          "-i",
+          "Wallpapers",
+          "-m",
+          "Svgs",
+          "-o",
+          "Render"
+        ]
+      }
+    ],
+    "compounds": []
   }
 }

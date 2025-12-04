@@ -29,6 +29,7 @@ STYLES = [
     "InverseBlurDarker",
     "InverseNegate",
     "InversePixelate",
+    # "LogoColors",
     "Negate",
     "Pixelate",
     "ThroughBlack",
@@ -39,6 +40,7 @@ NEED_BLUR_DARK = set(["Blur", "InverseBlur"])
 NEED_BLUR_DARKER = set(["InverseBlurDarker"])
 NEED_BRIGHTENED = set(["Blur"])
 NEED_FLIP = set(["Flip"])
+NEED_LOGOCOLORS = set(["LogoColors"])
 NEED_NEGATE = set(["InverseNegate", "Negate"])
 NEED_PIXELATE = set(["InversePixelate", "Pixelate"])
 
@@ -82,11 +84,12 @@ class Args:
 
 
 class TempImagePointers:
-    blurred: str
     blurred_dark: str
     blurred_darker: str
+    blurred: str
     brightened: str
     flipped: str
+    logocolored: str
     mask: str
     negated: str
     pixelated: str
@@ -95,6 +98,7 @@ class TempImagePointers:
 
 
 class TempMaskPointers:
+    logocolor: str
     mask: str
     maskname: str
     shadow: str
@@ -128,6 +132,7 @@ class Render:
         "InverseBlurDarker": "inverse_blur_darker",
         "InverseNegate": "inverse_negate",
         "InversePixelate": "inverse_pixelate",
+        "LogoColors": "logo_colors",
         "Negate": "negate",
         "Pixelate": "pixelate",
         "ThroughBlack": "through_black",
@@ -251,6 +256,14 @@ class Render:
             wal = Image.open(self.tempimages.wal)
             pix = Image.open(self.tempimages.pixelated)
             wal.paste(pix, mask=mask)
+            wal.save(self.out, format="JPEG", subsampling=0, quality=100)
+
+    def logo_colors(self):
+        if not os.path.exists(self.out):
+            logocolored = Image.open(self.tempimages.logocolored)
+            mask = Image.open(self.tempimages.mask)
+            wal = Image.open(self.tempimages.wal)
+            wal.paste(logocolored, mask=mask)
             wal.save(self.out, format="JPEG", subsampling=0, quality=100)
 
     def render(self):
@@ -446,8 +459,11 @@ def create_mask_temps(arguments: tuple[str, tuple[int, int]]) -> TempMaskPointer
     if not os.path.exists(os.path.join(TEMPDIR, f"mask_{tmpname}")):
         logger.info("creating mask temp", extra={"mask": svg})
         cairosvg.svg2png(url=os.path.join(SVGDIR, svg), write_to=tmpmask, output_height=height, output_width=width, scale=1)
-        mask = Image.open(tmpmask)
+        colored = Image.open(tmpmask)
+        black = ImageEnhance.Brightness(colored)
+        mask = black.enhance(factor=0.0)
         mask.save(os.path.join(TEMPDIR, f"mask_{tmpname}"))
+        colored.save(os.path.join(TEMPDIR, f"logocolor_{tmpname}"))
 
         blurred_mask = Image.new("RGB", size, (255, 255, 255))
         blurred_mask.paste(mask, mask=mask)
@@ -460,6 +476,7 @@ def create_mask_temps(arguments: tuple[str, tuple[int, int]]) -> TempMaskPointer
 
     pointers.mask = os.path.join(TEMPDIR, f"mask_{tmpname}")
     pointers.shadow = os.path.join(TEMPDIR, f"shadow_{tmpname}")
+    pointers.logocolor = os.path.join(TEMPDIR, f"logocolor_{tmpname}")
 
     return pointers
 
@@ -676,6 +693,7 @@ def main():
                     pointers.pixelated = result.pixelated
                     pointers.shadow = os.path.join(TEMPDIR, f"shadow_{tmpname}")
                     pointers.wal = result.wal
+                    pointers.logocolored = os.path.join(TEMPDIR, f"logocolor_{tmpname}")
                     for style in missing[result.walfile][motivefile]:
                         if "/" in style:
                             parts = style.split("/")
