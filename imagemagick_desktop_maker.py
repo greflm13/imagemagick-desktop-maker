@@ -29,7 +29,7 @@ STYLES = [
     "InverseBlurDarker",
     "InverseNegate",
     "InversePixelate",
-    # "LogoColors",
+    "LogoColors",
     "Negate",
     "Pixelate",
     "ThroughBlack",
