@@ -6,9 +6,10 @@
    id="svg3037"
    version="1.1"
    sodipodi:docname="nixos.svg"
-   inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -24,17 +25,113 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="pt"
-     inkscape:zoom="0.13716604"
-     inkscape:cx="5504.2779"
-     inkscape:cy="3120.3059"
-     inkscape:window-width="2560"
-     inkscape:window-height="1416"
-     inkscape:window-x="0"
+     inkscape:zoom="0.06858302"
+     inkscape:cx="3739.9928"
+     inkscape:cy="2449.5859"
+     inkscape:window-width="1908"
+     inkscape:window-height="999"
+     inkscape:window-x="3840"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg3037" />
+     inkscape:current-layer="svg3037"
+     showgrid="false" />
   <defs
-     id="defs5498" />
+     id="defs5498">
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       id="linear-gradient-2554fbbc168494bd92c970521b88236e"
+       x1="-320"
+       x2="128"
+       y1="-554.25629"
+       y2="221.7025">
+      <stop
+         offset="0%"
+         stop-color="#3e5993"
+         id="stop6224" />
+      <stop
+         offset="25%"
+         stop-color="#4564a5"
+         id="stop6226" />
+      <stop
+         offset="100%"
+         stop-color="#4d6fb7"
+         id="stop6228" />
+    </linearGradient>
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       id="linear-gradient-f683afeaafe0676dd2d738a2ab63a1d7"
+       x1="-320"
+       x2="128"
+       y1="-554.25629"
+       y2="221.7025">
+      <stop
+         offset="0%"
+         stop-color="#6d9bbc"
+         id="stop6231" />
+      <stop
+         offset="25%"
+         stop-color="#72a9cf"
+         id="stop6233" />
+      <stop
+         offset="100%"
+         stop-color="#77b6e1"
+         id="stop6235" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linear-gradient-2554fbbc168494bd92c970521b88236e"
+       id="linearGradient6322"
+       gradientUnits="userSpaceOnUse"
+       x1="-320"
+       y1="-554.25629"
+       x2="128"
+       y2="221.7025" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linear-gradient-f683afeaafe0676dd2d738a2ab63a1d7"
+       id="linearGradient6324"
+       gradientUnits="userSpaceOnUse"
+       x1="-320"
+       y1="-554.25629"
+       x2="128"
+       y2="221.7025" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linear-gradient-2554fbbc168494bd92c970521b88236e"
+       id="linearGradient6983"
+       gradientUnits="userSpaceOnUse"
+       x1="-320"
+       y1="-554.25629"
+       x2="128"
+       y2="221.7025" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linear-gradient-f683afeaafe0676dd2d738a2ab63a1d7"
+       id="linearGradient6985"
+       gradientUnits="userSpaceOnUse"
+       x1="-320"
+       y1="-554.25629"
+       x2="128"
+       y2="221.7025" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linear-gradient-2554fbbc168494bd92c970521b88236e"
+       id="linearGradient6987"
+       gradientUnits="userSpaceOnUse"
+       x1="-320"
+       y1="-554.25629"
+       x2="128"
+       y2="221.7025" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linear-gradient-f683afeaafe0676dd2d738a2ab63a1d7"
+       id="linearGradient6989"
+       gradientUnits="userSpaceOnUse"
+       x1="-320"
+       y1="-554.25629"
+       x2="128"
+       y2="221.7025" />
+  </defs>
   <metadata
      id="metadata5594">
     <rdf:RDF>
@@ -48,44 +145,43 @@
     </rdf:RDF>
   </metadata>
   <g
-     id="layer5"
-     style="display:inline"
-     transform="matrix(2.5268046,0,0,2.5268046,2868.138,1696.138)" />
-  <g
-     id="layer3"
-     style="display:inline"
-     transform="matrix(2.5268046,0,0,2.5268046,2868.138,1696.138)">
-    <g
-       transform="matrix(1.25,0,0,-1.25,-7.689875e-6,511.99876)"
-       id="g10">
-      <g
-         id="g12">
-        <g
-           transform="matrix(1.0205226,0,0,1.0205226,0,27.171437)"
-           id="g4154">
-          <path
-             d="m 122.453,169.761 97.758,-169.34 -44.926,-0.422 -26.101,45.496 -26.286,-45.25 -22.32,0.008 -11.433,19.75 37.449,64.394 -26.582,46.258 z"
-             id="path14" />
-          <path
-             d="M 157.738,239.515 59.961,70.183 37.133,108.882 63.484,154.229 11.152,154.366 0,173.702 l 11.391,19.777 74.488,-0.234 26.769,46.152 z"
-             id="path16" />
-          <path
-             d="M 165.238,104.155 360.77,104.143 338.672,65.026 286.223,65.171 312.27,19.784 301.102,0.456 278.277,0.429 241.238,65.058 187.883,65.167 Z"
-             id="path18" />
-          <path
-             d="m 279.043,178.35 -97.758,169.34 44.926,0.422 26.101,-45.496 26.286,45.254 22.32,-0.008 11.434,-19.754 -37.45,-64.39 26.582,-46.262 z"
-             id="path20" />
-          <path
-             d="m 122.453,169.761 97.758,-169.34 -44.926,-0.422 -26.101,45.496 -26.286,-45.25 -22.32,0.008 -11.433,19.75 37.449,64.394 -26.582,46.258 z"
-             id="path22" />
-          <path
-             d="m 236,244.386 -195.535,0.011 22.101,39.118 52.45,-0.149 -26.047,45.391 11.168,19.328 22.82,0.023 37.043,-64.625 53.352,-0.109 z"
-             id="path24" />
-          <path
-             d="m 243.625,108.636 97.777,169.328 22.825,-38.696 -26.348,-45.351 52.332,-0.137 11.152,-19.336 -11.39,-19.777 -74.489,0.238 -26.769,-46.152 z"
-             id="path26" />
-        </g>
-      </g>
-    </g>
+     id="g7003"
+     transform="matrix(0.74859177,0,0,0.74859177,1177.8003,476.5148)">
+    <polygon
+       fill="url(#linear-gradient-2554fbbc168494bd92c970521b88236e)"
+       points="-176,-526.54345 384,443.40501 128,443.40501 -4.0726089e-14,221.7025 -128,443.40501 -256,443.40501 -320,332.55376 -128,0 -304,-304.84094 "
+       transform="matrix(0.75,0,0,0.75,2882.1285,2909.0207)"
+       id="polygon6240"
+       style="fill:url(#linearGradient6983)" />
+    <polygon
+       fill="url(#linear-gradient-f683afeaafe0676dd2d738a2ab63a1d7)"
+       points="-176,-526.54345 384,443.40501 128,443.40501 -4.0726089e-14,221.7025 -128,443.40501 -256,443.40501 -320,332.55376 -128,0 -304,-304.84094 "
+       transform="matrix(0.375,0.64951905,-0.64951905,0.375,2642.1285,2493.3285)"
+       id="polygon6242"
+       style="fill:url(#linearGradient6985)" />
+    <polygon
+       fill="url(#linear-gradient-2554fbbc168494bd92c970521b88236e)"
+       points="-176,-526.54345 384,443.40501 128,443.40501 -4.0726089e-14,221.7025 -128,443.40501 -256,443.40501 -320,332.55376 -128,0 -304,-304.84094 "
+       transform="matrix(-0.375,0.64951905,-0.64951905,-0.375,2882.1285,2077.6363)"
+       id="polygon6244"
+       style="fill:url(#linearGradient6987)" />
+    <polygon
+       fill="url(#linear-gradient-f683afeaafe0676dd2d738a2ab63a1d7)"
+       points="-176,-526.54345 384,443.40501 128,443.40501 -4.0726089e-14,221.7025 -128,443.40501 -256,443.40501 -320,332.55376 -128,0 -304,-304.84094 "
+       transform="matrix(-0.75,0,0,-0.75,3362.1285,2077.6363)"
+       id="polygon6246"
+       style="fill:url(#linearGradient6989)" />
+    <polygon
+       fill="url(#linear-gradient-2554fbbc168494bd92c970521b88236e)"
+       points="-176,-526.54345 384,443.40501 128,443.40501 -4.0726089e-14,221.7025 -128,443.40501 -256,443.40501 -320,332.55376 -128,0 -304,-304.84094 "
+       transform="matrix(-0.375,-0.64951905,0.64951905,-0.375,3602.1285,2493.3285)"
+       id="polygon6248"
+       style="fill:url(#linearGradient6322)" />
+    <polygon
+       fill="url(#linear-gradient-f683afeaafe0676dd2d738a2ab63a1d7)"
+       points="-176,-526.54345 384,443.40501 128,443.40501 -4.0726089e-14,221.7025 -128,443.40501 -256,443.40501 -320,332.55376 -128,0 -304,-304.84094 "
+       transform="matrix(0.375,-0.64951905,0.64951905,0.375,3362.1285,2909.0207)"
+       id="polygon6250"
+       style="fill:url(#linearGradient6324)" />
   </g>
 </svg>
