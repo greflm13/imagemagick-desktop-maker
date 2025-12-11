@@ -124,6 +124,7 @@ class Render:
     style: str
     out: str
     color: str | None = None
+    img: Image.Image | None = None
 
     switch = {
         "Blur": "blur",
@@ -150,126 +151,116 @@ class Render:
             # self.switch[f"ColorThrough/{col}"] = "color_through"
 
     def through_black(self):
-        if not os.path.exists(self.out):
-            mask = Image.open(self.tempimages.mask)
-            wal = Image.open(self.tempimages.wal)
-            thrubl_image = Image.new("RGB", (wal.width, wal.height))
-            thrubl_image.paste(wal, mask=mask)
-            thrubl_image.save(self.out, format="JPEG", subsampling=0, quality=100)
+        mask = Image.open(self.tempimages.mask)
+        wal = Image.open(self.tempimages.wal)
+        thrubl_image = Image.new("RGB", (wal.width, wal.height))
+        thrubl_image.paste(wal, mask=mask)
+        self.img = thrubl_image
 
     def blur(self):
-        if not os.path.exists(self.out):
-            mask = Image.open(self.tempimages.mask)
-            shadow = Image.open(self.tempimages.shadow)
-            blurred_dark = Image.open(self.tempimages.blurred_dark)
-            brightened = Image.open(self.tempimages.brightened)
-            blurred_image = ImageChops.multiply(blurred_dark, shadow)
-            blurred_image.paste(brightened, mask=mask)
-            blurred_image.save(self.out, format="JPEG", subsampling=0, quality=100)
+        mask = Image.open(self.tempimages.mask)
+        shadow = Image.open(self.tempimages.shadow)
+        blurred_dark = Image.open(self.tempimages.blurred_dark)
+        brightened = Image.open(self.tempimages.brightened)
+        blurred_image = ImageChops.multiply(blurred_dark, shadow)
+        blurred_image.paste(brightened, mask=mask)
+        self.img = blurred_image
 
     def inverse_blur(self):
-        if not os.path.exists(self.out):
-            mask = Image.open(self.tempimages.mask)
-            shadow = Image.open(self.tempimages.shadow)
-            wal = Image.open(self.tempimages.wal)
-            blurred_dark = Image.open(self.tempimages.blurred_dark)
-            invblur = ImageChops.multiply(wal, shadow)
-            invblur.paste(blurred_dark, mask=mask)
-            invblur.save(self.out, format="JPEG", subsampling=0, quality=100)
+        mask = Image.open(self.tempimages.mask)
+        shadow = Image.open(self.tempimages.shadow)
+        wal = Image.open(self.tempimages.wal)
+        blurred_dark = Image.open(self.tempimages.blurred_dark)
+        invblur = ImageChops.multiply(wal, shadow)
+        invblur.paste(blurred_dark, mask=mask)
+        self.img = invblur
 
     def inverse_blur_darker(self):
-        if not os.path.exists(self.out):
-            mask = Image.open(self.tempimages.mask)
-            shadow = Image.open(self.tempimages.shadow)
-            wal = Image.open(self.tempimages.wal)
-            blurred_darker = Image.open(self.tempimages.blurred_darker)
-            inblda_image = ImageChops.multiply(wal, shadow)
-            inblda_image.paste(blurred_darker, mask=mask)
-            inblda_image.save(self.out, format="JPEG", subsampling=0, quality=100)
+        mask = Image.open(self.tempimages.mask)
+        shadow = Image.open(self.tempimages.shadow)
+        wal = Image.open(self.tempimages.wal)
+        blurred_darker = Image.open(self.tempimages.blurred_darker)
+        inblda_image = ImageChops.multiply(wal, shadow)
+        inblda_image.paste(blurred_darker, mask=mask)
+        self.img = inblda_image
 
     def negate(self):
-        if not os.path.exists(self.out):
-            mask = Image.open(self.tempimages.mask)
-            negated = Image.open(self.tempimages.negated)
-            neg = Image.open(self.tempimages.wal)
-            neg.paste(negated, mask=mask)
-            neg.save(self.out, format="JPEG", subsampling=0, quality=100)
+        mask = Image.open(self.tempimages.mask)
+        negated = Image.open(self.tempimages.negated)
+        neg = Image.open(self.tempimages.wal)
+        neg.paste(negated, mask=mask)
+        self.img = neg
 
     def inverse_negate(self):
-        if not os.path.exists(self.out):
-            mask = Image.open(self.tempimages.mask)
-            wal = Image.open(self.tempimages.wal)
-            invneg = Image.open(self.tempimages.negated)
-            invneg.paste(wal, mask=mask)
-            invneg.save(self.out, format="JPEG", subsampling=0, quality=100)
+        mask = Image.open(self.tempimages.mask)
+        wal = Image.open(self.tempimages.wal)
+        invneg = Image.open(self.tempimages.negated)
+        invneg.paste(wal, mask=mask)
+        self.img = invneg
 
     def flip(self):
-        if not os.path.exists(self.out):
-            mask = Image.open(self.tempimages.mask)
-            shadow = Image.open(self.tempimages.shadow)
-            wal = Image.open(self.tempimages.wal)
-            flipped = Image.open(self.tempimages.flipped)
-            flipimg = ImageChops.multiply(wal, shadow)
-            flipimg.paste(flipped, mask=mask)
-            flipimg.save(self.out, format="JPEG", subsampling=0, quality=100)
+        mask = Image.open(self.tempimages.mask)
+        shadow = Image.open(self.tempimages.shadow)
+        wal = Image.open(self.tempimages.wal)
+        flipped = Image.open(self.tempimages.flipped)
+        flipimg = ImageChops.multiply(wal, shadow)
+        flipimg.paste(flipped, mask=mask)
+        self.img = flipimg
 
     def color_overlay(self):
-        if not os.path.exists(self.out):
-            mask = Image.open(self.tempimages.mask)
-            shadow = Image.open(self.tempimages.shadow)
-            wal = Image.open(self.tempimages.wal)
-            cover = ImageChops.multiply(wal, shadow)
-            cover.paste(Image.new("RGB", wal.size, self.color), mask=mask)
-            cover.save(self.out, format="JPEG", subsampling=0, quality=100)
+        mask = Image.open(self.tempimages.mask)
+        shadow = Image.open(self.tempimages.shadow)
+        wal = Image.open(self.tempimages.wal)
+        cover = ImageChops.multiply(wal, shadow)
+        cover.paste(Image.new("RGB", wal.size, self.color), mask=mask)
+        self.img = cover
 
     def color_overlay_blur(self):
-        if not os.path.exists(self.out):
-            mask = Image.open(self.tempimages.mask)
-            shadow = Image.open(self.tempimages.shadow)
-            wal = Image.open(self.tempimages.blurred)
-            cover = ImageChops.multiply(wal, shadow)
-            cover.paste(Image.new("RGB", wal.size, self.color), mask=mask)
-            cover.save(self.out, format="JPEG", subsampling=0, quality=100)
+        mask = Image.open(self.tempimages.mask)
+        shadow = Image.open(self.tempimages.shadow)
+        wal = Image.open(self.tempimages.blurred)
+        cover = ImageChops.multiply(wal, shadow)
+        cover.paste(Image.new("RGB", wal.size, self.color), mask=mask)
+        self.img = cover
 
     def color_through(self):
-        if not os.path.exists(self.out):
-            mask = Image.open(self.tempimages.mask)
-            wal = Image.open(self.tempimages.wal)
-            trans = mask.convert("L")
-            data = mask.getdata(3)
-            trans.putdata([max(item, 127) for item in data])
-            mask.putalpha(trans)
-            cover = Image.composite(wal, Image.new("RGB", wal.size, self.color), mask)
-            cover.save(self.out, format="JPEG", subsampling=0, quality=100)
+        mask = Image.open(self.tempimages.mask)
+        wal = Image.open(self.tempimages.wal)
+        trans = mask.convert("L")
+        data = mask.getdata(3)
+        trans.putdata([max(item, 127) for item in data])
+        mask.putalpha(trans)
+        cover = Image.composite(wal, Image.new("RGB", wal.size, self.color), mask)
+        self.img = cover
 
     def pixelate(self):
-        if not os.path.exists(self.out):
-            mask = Image.open(self.tempimages.mask)
-            wal = Image.open(self.tempimages.wal)
-            pix = Image.open(self.tempimages.pixelated)
-            pix.paste(wal, mask=mask)
-            pix.save(self.out, format="JPEG", subsampling=0, quality=100)
+        mask = Image.open(self.tempimages.mask)
+        wal = Image.open(self.tempimages.wal)
+        pix = Image.open(self.tempimages.pixelated)
+        pix.paste(wal, mask=mask)
+        self.img = pix
 
     def inverse_pixelate(self):
-        if not os.path.exists(self.out):
-            mask = Image.open(self.tempimages.mask)
-            wal = Image.open(self.tempimages.wal)
-            pix = Image.open(self.tempimages.pixelated)
-            wal.paste(pix, mask=mask)
-            wal.save(self.out, format="JPEG", subsampling=0, quality=100)
+        mask = Image.open(self.tempimages.mask)
+        wal = Image.open(self.tempimages.wal)
+        pix = Image.open(self.tempimages.pixelated)
+        wal.paste(pix, mask=mask)
+        self.img = wal
 
     def logo_colors(self):
-        if not os.path.exists(self.out):
-            logocolored = Image.open(self.tempimages.logocolored)
-            mask = Image.open(self.tempimages.mask)
-            wal = Image.open(self.tempimages.wal)
-            wal.paste(logocolored, mask=mask)
-            wal.save(self.out, format="JPEG", subsampling=0, quality=100)
+        logocolored = Image.open(self.tempimages.logocolored)
+        mask = Image.open(self.tempimages.mask)
+        wal = Image.open(self.tempimages.wal)
+        wal.paste(logocolored, mask=mask)
+        self.img = wal
 
     def render(self):
-        do = self.switch.get(self.style, "")
-        if hasattr(self, do) and callable(func := getattr(self, do)):
-            func()
+        if not os.path.exists(self.out):
+            do = self.switch.get(self.style, "")
+            if hasattr(self, do) and callable(func := getattr(self, do)):
+                func()
+                if isinstance(self.img, Image.Image):
+                    self.img.save(self.out, format="JPEG", subsampling=2, quality=95, optimize=True)
 
 
 templist: list[TempMaskPointers] = []
@@ -493,7 +484,7 @@ def create_effect_temps(arguments: tuple[ImageFile.ImageFile, str, str, list[str
     if NEED_BLUR in "\t".join(need_effects):
         if not os.path.exists(os.path.join(TEMPDIR, f"blurred_{walname}.jpg")):
             blurred = wal.filter(filter=ImageFilter.GaussianBlur(radius=20))
-            blurred.save(os.path.join(TEMPDIR, f"blurred_{walname}.jpg"))
+            blurred.save(os.path.join(TEMPDIR, f"blurred_{walname}.jpg"), format="JPEG", subsampling=0, quality=100)
             blurred.close()
         pointers.blurred = os.path.join(TEMPDIR, f"blurred_{walname}.jpg")
     else:
@@ -504,7 +495,7 @@ def create_effect_temps(arguments: tuple[ImageFile.ImageFile, str, str, list[str
             blurred_dark = wal.filter(filter=ImageFilter.GaussianBlur(radius=80))
             darkened80 = ImageEnhance.Brightness(blurred_dark)
             blurred_dark = darkened80.enhance(factor=0.8)
-            blurred_dark.save(os.path.join(TEMPDIR, f"blurred_dark_{walname}.jpg"))
+            blurred_dark.save(os.path.join(TEMPDIR, f"blurred_dark_{walname}.jpg"), format="JPEG", subsampling=0, quality=100)
             blurred_dark.close()
         pointers.blurred_dark = os.path.join(TEMPDIR, f"blurred_dark_{walname}.jpg")
     else:
@@ -515,7 +506,7 @@ def create_effect_temps(arguments: tuple[ImageFile.ImageFile, str, str, list[str
             blurred_darker = wal.filter(filter=ImageFilter.GaussianBlur(radius=80))
             darkened40 = ImageEnhance.Brightness(blurred_darker)
             blurred_darker = darkened40.enhance(factor=0.4)
-            blurred_darker.save(os.path.join(TEMPDIR, f"blurred_darker_{walname}.jpg"))
+            blurred_darker.save(os.path.join(TEMPDIR, f"blurred_darker_{walname}.jpg"), format="JPEG", subsampling=0, quality=100)
             blurred_darker.close()
         pointers.blurred_darker = os.path.join(TEMPDIR, f"blurred_darker_{walname}.jpg")
     else:
@@ -525,7 +516,7 @@ def create_effect_temps(arguments: tuple[ImageFile.ImageFile, str, str, list[str
         if not os.path.exists(os.path.join(TEMPDIR, f"brightened_{walname}.jpg")):
             brightened = ImageEnhance.Brightness(wal)
             brightened = brightened.enhance(factor=1.1)
-            brightened.save(os.path.join(TEMPDIR, f"brightened_{walname}.jpg"))
+            brightened.save(os.path.join(TEMPDIR, f"brightened_{walname}.jpg"), format="JPEG", subsampling=0, quality=100)
             brightened.close()
         pointers.brightened = os.path.join(TEMPDIR, f"brightened_{walname}.jpg")
     else:
@@ -534,7 +525,7 @@ def create_effect_temps(arguments: tuple[ImageFile.ImageFile, str, str, list[str
     if len(NEED_NEGATE.intersection(need_effects)) > 0:
         if not os.path.exists(os.path.join(TEMPDIR, f"negated_{walname}.jpg")):
             negated = ImageOps.invert(wal)
-            negated.save(os.path.join(TEMPDIR, f"negated_{walname}.jpg"))
+            negated.save(os.path.join(TEMPDIR, f"negated_{walname}.jpg"), format="JPEG", subsampling=0, quality=100)
             negated.close()
         pointers.negated = os.path.join(TEMPDIR, f"negated_{walname}.jpg")
     else:
@@ -543,7 +534,7 @@ def create_effect_temps(arguments: tuple[ImageFile.ImageFile, str, str, list[str
     if len(NEED_FLIP.intersection(need_effects)) > 0:
         if not os.path.exists(os.path.join(TEMPDIR, f"flipped_{walname}.jpg")):
             flipped = wal.transpose(method=Image.Transpose.FLIP_TOP_BOTTOM)
-            flipped.save(os.path.join(TEMPDIR, f"flipped_{walname}.jpg"))
+            flipped.save(os.path.join(TEMPDIR, f"flipped_{walname}.jpg"), format="JPEG", subsampling=0, quality=100)
             flipped.close()
         pointers.flipped = os.path.join(TEMPDIR, f"flipped_{walname}.jpg")
     else:
@@ -555,7 +546,7 @@ def create_effect_temps(arguments: tuple[ImageFile.ImageFile, str, str, list[str
             darkenedsmall = ImageEnhance.Brightness(small)
             darksmall = darkenedsmall.enhance(factor=0.8)
             pixelated = darksmall.resize(wal.size, Image.Resampling.NEAREST)
-            pixelated.save(os.path.join(TEMPDIR, f"pixelated_{walname}.jpg"))
+            pixelated.save(os.path.join(TEMPDIR, f"pixelated_{walname}.jpg"), format="JPEG", subsampling=0, quality=100)
             small.close()
             darksmall.close()
             pixelated.close()
