@@ -106,17 +106,17 @@ class TempMaskPointers:
 
 
 class TempEffectPointers:
-    blurred: str
     blurred_dark: str
     blurred_darker: str
+    blurred: str
     brightened: str
     flipped: str
     negated: str
     pixelated: str
+    size: tuple[int, int]
     wal: str
     walfile: str
     walname: str
-    size: tuple[int, int]
 
 
 class Render:
@@ -559,11 +559,12 @@ def create_effect_temps(arguments: tuple[ImageFile.ImageFile, str, str, list[str
 
 def main():
     motives: list[str] = []
-    effectlist: list[tuple[ImageFile.ImageFile, str, str, list[str]]] = []
+    effectlist: dict[str, list[tuple[ImageFile.ImageFile, str, str, list[str]]]] = {}
     masklist: set[tuple[str, tuple[int, int]]] = set()
     need_img_list = set()
     need_motive_list = set()
     need_style_list = set()
+    delete_temps = set()
 
     missing: dict[str, dict[str, list[str]]] = {}
 
@@ -624,7 +625,7 @@ def main():
                 for style in v2:
                     os.makedirs(os.path.join(args.outdir, motive, imgname), exist_ok=True)
                     need_style.add(style)
-            effectlist.append((img, os.path.join(TEMPDIR, imgfilename), imgname, sorted(need_style)))
+            effectlist[imgfilename] = [(img, os.path.join(TEMPDIR, imgfilename), imgname, sorted(need_style))]
 
         # DEBUG
         # for mask in tqdm(masklist, total=len(masklist), desc="Creating mask temporaries", unit="image", ascii=True, dynamic_ncols=True):
@@ -638,69 +639,88 @@ def main():
             ):
                 templist.append(result)
 
-        # DEBUG
-        # for effects in tqdm(effectlist, total=len(effectlist), desc="Creating effect temporaries", unit="image", ascii=True, dynamic_ncols=True):
-        #     result = create_effect_temps(effects)
-        #     for motivefile in missing[result.walfile].keys():
-        #         motive = os.path.splitext(os.path.basename(motivefile))[0]
-        #         width, height = result.size
-        #         tmpname = f"{motive}_{width}x{height}.png"
-        #         pointers = TempImagePointers()
-        #         pointers.blurred = result.blurred
-        #         pointers.blurred_dark = result.blurred_dark
-        #         pointers.blurred_darker = result.blurred_darker
-        #         pointers.brightened = result.brightened
-        #         pointers.flipped = result.flipped
-        #         pointers.mask = os.path.join(TEMPDIR, f"mask_{tmpname}")
-        #         pointers.negated = result.negated
-        #         pointers.pixelated = result.pixelated
-        #         pointers.shadow = os.path.join(TEMPDIR, f"shadow_{tmpname}")
-        #         pointers.wal = result.wal
-        #         for style in missing[result.walfile][motivefile]:
-        #             if "/" in style:
-        #                 parts = style.split("/")
-        #                 out = os.path.join(args.outdir, motive, result.walname, parts[1] + parts[0].removeprefix("Color") + ".jpg")
-        #             else:
-        #                 out = os.path.join(args.outdir, motive, result.walname, style + ".jpg")
-        #             renderlist.append((pointers, style, out))
+        for wal in effectlist:
+            renderlist = []
+            # DEBUG
+            # for effects in tqdm(effectlist[wal], total=len(effectlist[wal]), desc=f"Creating effect temporaries for {wal}", unit="image", ascii=True, dynamic_ncols=True):
+            #     result = create_effect_temps(effects)
+            #     for tmpfile in result.__dict__.values():
+            #         if tmpfile.startswith(TEMPDIR):
+            #             delete_temps.add(tmpfile)
+            #     for motivefile in missing[result.walfile].keys():
+            #         motive = os.path.splitext(os.path.basename(motivefile))[0]
+            #         width, height = result.size
+            #         tmpname = f"{motive}_{width}x{height}.png"
+            #         pointers = TempImagePointers()
+            #         pointers.blurred = result.blurred
+            #         pointers.blurred_dark = result.blurred_dark
+            #         pointers.blurred_darker = result.blurred_darker
+            #         pointers.brightened = result.brightened
+            #         pointers.flipped = result.flipped
+            #         pointers.mask = os.path.join(TEMPDIR, f"mask_{tmpname}")
+            #         pointers.negated = result.negated
+            #         pointers.pixelated = result.pixelated
+            #         pointers.shadow = os.path.join(TEMPDIR, f"shadow_{tmpname}")
+            #         pointers.wal = result.wal
+            #         pointers.logocolored = os.path.join(TEMPDIR, f"logocolor_{tmpname}")
+            #         for style in missing[result.walfile][motivefile]:
+            #             if "/" in style:
+            #                 parts = style.split("/")
+            #                 out = os.path.join(args.outdir, motive, result.walname, parts[1] + parts[0].removeprefix("Color") + ".jpg")
+            #             else:
+            #                 out = os.path.join(args.outdir, motive, result.walname, style + ".jpg")
+            #             renderlist.append((pointers, style, out))
 
-        # PRODUCTION
-        with Pool(os.cpu_count()) as pool:
-            for result in tqdm(
-                pool.imap_unordered(create_effect_temps, effectlist), total=len(effectlist), desc="Creating effect temporaries", unit="image", ascii=True, dynamic_ncols=True
-            ):
-                for motivefile in missing[result.walfile].keys():
-                    motive = os.path.splitext(os.path.basename(motivefile))[0]
-                    width, height = result.size
-                    tmpname = f"{motive}_{width}x{height}.png"
-                    pointers = TempImagePointers()
-                    pointers.blurred = result.blurred
-                    pointers.blurred_dark = result.blurred_dark
-                    pointers.blurred_darker = result.blurred_darker
-                    pointers.brightened = result.brightened
-                    pointers.flipped = result.flipped
-                    pointers.mask = os.path.join(TEMPDIR, f"mask_{tmpname}")
-                    pointers.negated = result.negated
-                    pointers.pixelated = result.pixelated
-                    pointers.shadow = os.path.join(TEMPDIR, f"shadow_{tmpname}")
-                    pointers.wal = result.wal
-                    pointers.logocolored = os.path.join(TEMPDIR, f"logocolor_{tmpname}")
-                    for style in missing[result.walfile][motivefile]:
-                        if "/" in style:
-                            parts = style.split("/")
-                            out = os.path.join(args.outdir, motive, result.walname, parts[1] + parts[0].removeprefix("Color") + ".jpg")
-                        else:
-                            out = os.path.join(args.outdir, motive, result.walname, style + ".jpg")
-                        renderlist.append((pointers, style, out))
+            # PRODUCTION
+            with Pool(os.cpu_count()) as pool:
+                for result in tqdm(
+                    pool.imap_unordered(create_effect_temps, effectlist[wal]),
+                    total=len(effectlist[wal]),
+                    desc=f"Creating effect temporaries for {wal}",
+                    unit="image",
+                    ascii=True,
+                    dynamic_ncols=True,
+                ):
+                    for tmpfile in result.__dict__.values():
+                        if isinstance(tmpfile, str) and tmpfile.startswith(TEMPDIR):
+                            delete_temps.add(tmpfile)
+                    for motivefile in missing[result.walfile].keys():
+                        motive = os.path.splitext(os.path.basename(motivefile))[0]
+                        width, height = result.size
+                        tmpname = f"{motive}_{width}x{height}.png"
+                        pointers = TempImagePointers()
+                        pointers.blurred = result.blurred
+                        pointers.blurred_dark = result.blurred_dark
+                        pointers.blurred_darker = result.blurred_darker
+                        pointers.brightened = result.brightened
+                        pointers.flipped = result.flipped
+                        pointers.mask = os.path.join(TEMPDIR, f"mask_{tmpname}")
+                        pointers.negated = result.negated
+                        pointers.pixelated = result.pixelated
+                        pointers.shadow = os.path.join(TEMPDIR, f"shadow_{tmpname}")
+                        pointers.wal = result.wal
+                        pointers.logocolored = os.path.join(TEMPDIR, f"logocolor_{tmpname}")
+                        for style in missing[result.walfile][motivefile]:
+                            if "/" in style:
+                                parts = style.split("/")
+                                out = os.path.join(args.outdir, motive, result.walname, parts[1] + parts[0].removeprefix("Color") + ".jpg")
+                            else:
+                                out = os.path.join(args.outdir, motive, result.walname, style + ".jpg")
+                            renderlist.append((pointers, style, out))
 
-        # DEBUG
-        # for renderi in tqdm(renderlist, total=len(renderlist), desc="Rendering wallpapers", unit="image", ascii=True, dynamic_ncols=True):
-        #     render(renderi)
+            # DEBUG
+            # for renderi in tqdm(renderlist, total=len(renderlist), desc=f"Rendering wallpaper {wal}", unit="image", ascii=True, dynamic_ncols=True):
+            # render(renderi)
 
-        # PRODUCTION
-        with Pool(os.cpu_count()) as pool:
-            for _ in tqdm(pool.imap_unordered(render, renderlist), total=len(renderlist), desc="Rendering wallpapers", unit="image", ascii=True, dynamic_ncols=True):
-                pass
+            # PRODUCTION
+            with Pool(os.cpu_count()) as pool:
+                for _ in tqdm(pool.imap_unordered(render, renderlist), total=len(renderlist), desc=f"Rendering wallpaper {wal}", unit="image", ascii=True, dynamic_ncols=True):
+                    pass
+
+            for tmpfile in delete_temps:
+                if os.path.exists(tmpfile):
+                    os.remove(tmpfile)
+            delete_temps = set()
 
     finally:
         shutil.rmtree(TEMPDIR)
