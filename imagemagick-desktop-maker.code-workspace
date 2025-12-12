@@ -45,7 +45,12 @@
           "-m",
           "Svgs",
           "-o",
-          "Render"
+          "Render",
+          "--effects",
+          "ColorThrough",
+          "ColorOverlayBlur",
+          "--colors",
+          "Tannengrün"
         ]
       }
     ],
