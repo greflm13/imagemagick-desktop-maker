@@ -2,6 +2,7 @@
 import os
 import json
 import gzip
+import math
 import shutil
 import logging
 import argparse
@@ -12,7 +13,7 @@ import subprocess
 from io import BytesIO
 import cairosvg
 from tqdm.auto import tqdm
-from PIL import Image, ImageFilter, ImageChops, ImageEnhance, ImageOps
+from PIL import Image, ImageFile, ImageFilter, ImageChops, ImageEnhance, ImageOps
 from rich_argparse import RichHelpFormatter, HelpPreviewAction
 from pythonjsonlogger import jsonlogger
 
@@ -169,6 +170,7 @@ class EffectCreator:
         wal = Image.open(self.walfile)
         blurred = wal.filter(filter=ImageFilter.GaussianBlur(radius=20))
         blurred.save(self.output_path, format="JPEG", subsampling=0, quality=100)
+        logger.info("created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path})
         blurred.close()
         wal.close()
 
@@ -181,6 +183,7 @@ class EffectCreator:
         darkened80 = ImageEnhance.Brightness(blurred_dark)
         blurred_dark = darkened80.enhance(factor=0.8)
         blurred_dark.save(self.output_path, format="JPEG", subsampling=0, quality=100)
+        logger.info("created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path})
         blurred_dark.close()
         small.close()
         blurred_small.close()
@@ -195,6 +198,7 @@ class EffectCreator:
         darkened40 = ImageEnhance.Brightness(blurred_darker)
         blurred_darker = darkened40.enhance(factor=0.4)
         blurred_darker.save(self.output_path, format="JPEG", subsampling=0, quality=100)
+        logger.info("created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path})
         blurred_darker.close()
         small.close()
         blurred_small.close()
@@ -206,6 +210,7 @@ class EffectCreator:
         brightened = ImageEnhance.Brightness(wal)
         brightened = brightened.enhance(factor=1.1)
         brightened.save(self.output_path, format="JPEG", subsampling=0, quality=100)
+        logger.info("created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path})
         brightened.close()
         wal.close()
 
@@ -214,6 +219,7 @@ class EffectCreator:
         wal = Image.open(self.walfile)
         negated = ImageOps.invert(wal)
         negated.save(self.output_path, format="JPEG", subsampling=0, quality=100)
+        logger.info("created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path})
         negated.close()
         wal.close()
 
@@ -222,6 +228,7 @@ class EffectCreator:
         wal = Image.open(self.walfile)
         flipped = wal.transpose(method=Image.Transpose.FLIP_TOP_BOTTOM)
         flipped.save(self.output_path, format="JPEG", subsampling=0, quality=100)
+        logger.info("created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path})
         flipped.close()
         wal.close()
 
@@ -233,6 +240,7 @@ class EffectCreator:
         darksmall = darkenedsmall.enhance(factor=0.8)
         pixelated = darksmall.resize(wal.size, Image.Resampling.NEAREST)
         pixelated.save(self.output_path, format="JPEG", subsampling=0, quality=100)
+        logger.info("created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path})
         small.close()
         darksmall.close()
         pixelated.close()
@@ -244,7 +252,7 @@ class Render:
     style: str
     out: str
     color: str | None = None
-    img: Image.Image | None = None
+    img: Image.Image | ImageFile.ImageFile | None = None
 
     switch = {
         "Blur": "blur",
@@ -276,6 +284,7 @@ class Render:
         thrubl_image = Image.new("RGB", (wal.width, wal.height))
         thrubl_image.paste(wal, mask=mask)
         self.img = thrubl_image
+        logger.info("rendered image", extra={"style": self.style, "mask": self.tempimages.mask})
 
     def blur(self):
         mask = Image.open(self.tempimages.mask)
@@ -285,6 +294,7 @@ class Render:
         blurred_image = ImageChops.multiply(blurred_dark, shadow)
         blurred_image.paste(brightened, mask=mask)
         self.img = blurred_image
+        logger.info("rendered image", extra={"style": self.style, "mask": self.tempimages.mask})
 
     def inverse_blur(self):
         mask = Image.open(self.tempimages.mask)
@@ -294,6 +304,7 @@ class Render:
         invblur = ImageChops.multiply(wal, shadow)
         invblur.paste(blurred_dark, mask=mask)
         self.img = invblur
+        logger.info("rendered image", extra={"style": self.style, "mask": self.tempimages.mask})
 
     def inverse_blur_darker(self):
         mask = Image.open(self.tempimages.mask)
@@ -303,6 +314,7 @@ class Render:
         inblda_image = ImageChops.multiply(wal, shadow)
         inblda_image.paste(blurred_darker, mask=mask)
         self.img = inblda_image
+        logger.info("rendered image", extra={"style": self.style, "mask": self.tempimages.mask})
 
     def negate(self):
         mask = Image.open(self.tempimages.mask)
@@ -310,6 +322,7 @@ class Render:
         neg = Image.open(self.tempimages.wal)
         neg.paste(negated, mask=mask)
         self.img = neg
+        logger.info("rendered image", extra={"style": self.style, "mask": self.tempimages.mask})
 
     def inverse_negate(self):
         mask = Image.open(self.tempimages.mask)
@@ -317,6 +330,7 @@ class Render:
         invneg = Image.open(self.tempimages.negated)
         invneg.paste(wal, mask=mask)
         self.img = invneg
+        logger.info("rendered image", extra={"style": self.style, "mask": self.tempimages.mask})
 
     def flip(self):
         mask = Image.open(self.tempimages.mask)
@@ -326,6 +340,7 @@ class Render:
         flipimg = ImageChops.multiply(wal, shadow)
         flipimg.paste(flipped, mask=mask)
         self.img = flipimg
+        logger.info("rendered image", extra={"style": self.style, "mask": self.tempimages.mask})
 
     def color_overlay(self):
         mask = Image.open(self.tempimages.mask)
@@ -334,6 +349,7 @@ class Render:
         cover = ImageChops.multiply(wal, shadow)
         cover.paste(Image.new("RGB", wal.size, self.color), mask=mask)
         self.img = cover
+        logger.info("rendered image", extra={"style": self.style, "mask": self.tempimages.mask})
 
     def color_overlay_blur(self):
         mask = Image.open(self.tempimages.mask)
@@ -342,6 +358,7 @@ class Render:
         cover = ImageChops.multiply(wal, shadow)
         cover.paste(Image.new("RGB", wal.size, self.color), mask=mask)
         self.img = cover
+        logger.info("rendered image", extra={"style": self.style, "mask": self.tempimages.mask})
 
     def color_through(self):
         mask = Image.open(self.tempimages.mask)
@@ -352,6 +369,7 @@ class Render:
         mask.putalpha(trans)
         cover = Image.composite(wal, Image.new("RGB", wal.size, self.color), mask)
         self.img = cover
+        logger.info("rendered image", extra={"style": self.style, "mask": self.tempimages.mask})
 
     def pixelate(self):
         mask = Image.open(self.tempimages.mask)
@@ -359,6 +377,7 @@ class Render:
         pix = Image.open(self.tempimages.pixelated)
         pix.paste(wal, mask=mask)
         self.img = pix
+        logger.info("rendered image", extra={"style": self.style, "mask": self.tempimages.mask})
 
     def inverse_pixelate(self):
         mask = Image.open(self.tempimages.mask)
@@ -366,6 +385,7 @@ class Render:
         pix = Image.open(self.tempimages.pixelated)
         wal.paste(pix, mask=mask)
         self.img = wal
+        logger.info("rendered image", extra={"style": self.style, "mask": self.tempimages.mask})
 
     def logo_colors(self):
         logocolored = Image.open(self.tempimages.logocolored)
@@ -373,14 +393,16 @@ class Render:
         wal = Image.open(self.tempimages.wal)
         wal.paste(logocolored, mask=mask)
         self.img = wal
+        logger.info("rendered image", extra={"style": self.style, "mask": self.tempimages.mask})
 
     def render(self):
         if not os.path.exists(self.out):
             do = self.switch.get(self.style, "")
             if hasattr(self, do) and callable(func := getattr(self, do)):
                 func()
-                if isinstance(self.img, Image.Image):
+                if isinstance(self.img, Image.Image) or isinstance(self.img, ImageFile.ImageFile):
                     self.img.save(self.out, format="JPEG", subsampling=2, quality=95, optimize=True)
+                    logger.info("saved rendered image", extra={"style": self.style, "out": self.out})
 
 
 templist: list[TempMaskPointers] = []
@@ -768,7 +790,7 @@ def compute_chunksize(n_tasks: int, n_workers: int) -> int:
     if n_tasks <= 0:
         return 1
     denom = max(1, n_workers * 4)
-    return max(1, n_tasks // denom)
+    return max(1, math.ceil(n_tasks // denom))
 
 
 def set_perf_cores_only():
@@ -792,11 +814,11 @@ def set_perf_cores_only():
         e_cores = content.count("cpu family\t: Efficiency")
 
         if p_cores == 0 or e_cores == 0:
-            # Fallback: assume first half are P-cores (common on 12-core hybrid)
+            # Fallback: assume no P-cores
             import multiprocessing
 
             total = multiprocessing.cpu_count()
-            p_cores = total // 2
+            p_cores = total
 
         if p_cores > 0:
             # Set CPU affinity to P-cores only
@@ -869,6 +891,7 @@ def main():
                     else:
                         out = os.path.join(args.outdir, motive, imgname, style + ".jpg")
                     if not os.path.exists(out):
+                        logger.info("missing render detected", extra={"file": out})
                         if not missing.get(imgfilename, False):
                             missing[imgfilename] = {}
                         if not missing[imgfilename].get(motivefile, False):
@@ -912,7 +935,7 @@ def main():
 
         # create a single pool for mask creation, effect creation and rendering
         cpu = os.cpu_count() or 1
-        workers = max(1, cpu - 1)
+        workers = max(1, cpu)
         pool = Pool(processes=workers)
         mask_tasks = len(masklist)
         mask_chunksize = compute_chunksize(mask_tasks, workers)
