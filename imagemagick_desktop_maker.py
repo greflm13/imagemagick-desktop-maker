@@ -170,7 +170,9 @@ class EffectCreator:
         wal = Image.open(self.walfile)
         blurred = wal.filter(filter=ImageFilter.GaussianBlur(radius=20))
         blurred.save(self.output_path, format="JPEG", subsampling=0, quality=100)
-        logger.info("created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path})
+        logger.info(
+            "created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path}
+        )
         blurred.close()
         wal.close()
 
@@ -183,7 +185,9 @@ class EffectCreator:
         darkened80 = ImageEnhance.Brightness(blurred_dark)
         blurred_dark = darkened80.enhance(factor=0.8)
         blurred_dark.save(self.output_path, format="JPEG", subsampling=0, quality=100)
-        logger.info("created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path})
+        logger.info(
+            "created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path}
+        )
         blurred_dark.close()
         small.close()
         blurred_small.close()
@@ -198,7 +202,9 @@ class EffectCreator:
         darkened40 = ImageEnhance.Brightness(blurred_darker)
         blurred_darker = darkened40.enhance(factor=0.4)
         blurred_darker.save(self.output_path, format="JPEG", subsampling=0, quality=100)
-        logger.info("created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path})
+        logger.info(
+            "created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path}
+        )
         blurred_darker.close()
         small.close()
         blurred_small.close()
@@ -210,7 +216,9 @@ class EffectCreator:
         brightened = ImageEnhance.Brightness(wal)
         brightened = brightened.enhance(factor=1.1)
         brightened.save(self.output_path, format="JPEG", subsampling=0, quality=100)
-        logger.info("created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path})
+        logger.info(
+            "created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path}
+        )
         brightened.close()
         wal.close()
 
@@ -219,7 +227,9 @@ class EffectCreator:
         wal = Image.open(self.walfile)
         negated = ImageOps.invert(wal)
         negated.save(self.output_path, format="JPEG", subsampling=0, quality=100)
-        logger.info("created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path})
+        logger.info(
+            "created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path}
+        )
         negated.close()
         wal.close()
 
@@ -228,7 +238,9 @@ class EffectCreator:
         wal = Image.open(self.walfile)
         flipped = wal.transpose(method=Image.Transpose.FLIP_TOP_BOTTOM)
         flipped.save(self.output_path, format="JPEG", subsampling=0, quality=100)
-        logger.info("created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path})
+        logger.info(
+            "created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path}
+        )
         flipped.close()
         wal.close()
 
@@ -240,7 +252,9 @@ class EffectCreator:
         darksmall = darkenedsmall.enhance(factor=0.8)
         pixelated = darksmall.resize(wal.size, Image.Resampling.NEAREST)
         pixelated.save(self.output_path, format="JPEG", subsampling=0, quality=100)
-        logger.info("created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path})
+        logger.info(
+            "created effect", extra={"wallpaper": self.walname, "effect": self.effect, "output": self.output_path}
+        )
         small.close()
         darksmall.close()
         pixelated.close()
@@ -597,9 +611,21 @@ def parse_arguments() -> Args:
         description="Generate styled desktop wallpaper images from SVG masks and source wallpapers.",
         formatter_class=RichHelpFormatter,
     )
-    parser.add_argument("-m", "--masks", help="svg masks path", default=SVGDIR, type=str, dest="svgdir", metavar="FOLDER")
-    parser.add_argument("-i", "--images", help="input images path", default=WALLPAPERDIR, type=str, dest="wallpaperdir", metavar="FOLDER")
-    parser.add_argument("-o", "--out", help="output folder path", default=OUTDIR, type=str, dest="outdir", metavar="FOLDER")
+    parser.add_argument(
+        "-m", "--masks", help="svg masks path", default=SVGDIR, type=str, dest="svgdir", metavar="FOLDER"
+    )
+    parser.add_argument(
+        "-i",
+        "--images",
+        help="input images path",
+        default=WALLPAPERDIR,
+        type=str,
+        dest="wallpaperdir",
+        metavar="FOLDER",
+    )
+    parser.add_argument(
+        "-o", "--out", help="output folder path", default=OUTDIR, type=str, dest="outdir", metavar="FOLDER"
+    )
     parser.add_argument(
         "--sync-wallpapers",
         help="pre-sync wallpapers into local cache (uses rsync if available)",
@@ -671,8 +697,10 @@ def create_mask_temps(arguments: tuple[str, tuple[int, int]]) -> TempMaskPointer
     tmpname = f"{pointers.maskname}_{width}x{height}.png"
 
     if not os.path.exists(os.path.join(TEMPDIR, f"mask_{tmpname}")):
-        logger.info("creating mask temp", extra={"mask": svg})
-        cairosvg.svg2png(url=os.path.join(SVGDIR, svg), write_to=tmpmask, output_height=height, output_width=width, scale=1)
+        logger.info("creating mask temp", extra={"mask": svg, "size": size})
+        cairosvg.svg2png(
+            url=os.path.join(SVGDIR, svg), write_to=tmpmask, output_height=height, output_width=width, scale=1
+        )
         colored = Image.open(tmpmask)
         black = ImageEnhance.Brightness(colored)
         mask = black.enhance(factor=0.0)
@@ -877,17 +905,28 @@ def main():
         motives = sorted(os.listdir(args.svgdir))
         imgs = sorted(os.listdir(args.wallpaperdir))
         styles = sorted(dynamic_styles)
-        for imgfilename in tqdm(imgs, desc="[Check] Scanning wallpapers for missing renders", unit="file", dynamic_ncols=True, ascii=True):
+        for imgfilename in tqdm(
+            imgs, desc="[Check] Scanning wallpapers for missing renders", unit="file", dynamic_ncols=True, ascii=True
+        ):
             imgname, ext = os.path.splitext(os.path.basename(imgfilename))
             if ext not in [".jpg", ".jpeg", ".png"]:
                 logger.warning("skipping unsupported image file", extra={"file": imgfilename})
                 continue
-            for motivefile in tqdm(motives, desc=f"[Check] Scanning SVG masks for {imgname}", unit="mask", dynamic_ncols=True, ascii=True, leave=False):
+            for motivefile in tqdm(
+                motives,
+                desc=f"[Check] Scanning SVG masks for {imgname}",
+                unit="mask",
+                dynamic_ncols=True,
+                ascii=True,
+                leave=False,
+            ):
                 motive = os.path.splitext(os.path.basename(motivefile))[0]
                 for style in styles:
                     if "/" in style:
                         parts = style.split("/")
-                        out = os.path.join(args.outdir, motive, imgname, parts[1] + parts[0].removeprefix("Color") + ".jpg")
+                        out = os.path.join(
+                            args.outdir, motive, imgname, parts[1] + parts[0].removeprefix("Color") + ".jpg"
+                        )
                     else:
                         out = os.path.join(args.outdir, motive, imgname, style + ".jpg")
                     if not os.path.exists(out):
@@ -916,7 +955,13 @@ def main():
         # Reuse a single process pool for all CPU-bound stages
         pool = None
 
-        for imgfilename, v in tqdm(missing.items(), desc="[Cache] Copying wallpapers to temp directory", unit="file", dynamic_ncols=True, ascii=True):
+        for imgfilename, v in tqdm(
+            missing.items(),
+            desc="[Cache] Copying wallpapers to temp directory",
+            unit="file",
+            dynamic_ncols=True,
+            ascii=True,
+        ):
             src = os.path.join(args.wallpaperdir, imgfilename)
             # copy to persistent cache (uses rsync when available)
             walpath = get_cached_wallpaper(src)
@@ -1005,30 +1050,34 @@ def main():
                     effect_paths[effect_name] = effect_path
 
                 # Build renderlist using the created effect paths
-                for style in styles_list:
-                    if "/" in style:
-                        parts = style.split("/")
-                        out = os.path.join(args.outdir, motive, imgname, parts[1] + parts[0].removeprefix("Color") + ".jpg")
-                    else:
-                        out = os.path.join(args.outdir, motive, imgname, style + ".jpg")
+                for motivefile, _ in masklist:
+                    motive = os.path.splitext(os.path.basename(motivefile))[0]
+                    for style in styles_list:
+                        if "/" in style:
+                            parts = style.split("/")
+                            out = os.path.join(
+                                args.outdir, motive, imgname, parts[1] + parts[0].removeprefix("Color") + ".jpg"
+                            )
+                        else:
+                            out = os.path.join(args.outdir, motive, imgname, style + ".jpg")
 
-                    width, height = walsize
-                    tmpname = f"{motive}_{width}x{height}.png"
-                    pointers = TempImagePointers()
-                    pointers.wal = walpath
-                    pointers.blurred = effect_paths.get("blurred", "")
-                    pointers.blurred_dark = effect_paths.get("blurred_dark", "")
-                    pointers.blurred_darker = effect_paths.get("blurred_darker", "")
-                    pointers.brightened = effect_paths.get("brightened", "")
-                    pointers.flipped = effect_paths.get("flipped", "")
-                    pointers.negated = effect_paths.get("negated", "")
-                    pointers.pixelated = effect_paths.get("pixelated", "")
-                    pointers.mask = os.path.join(TEMPDIR, f"mask_{tmpname}")
-                    pointers.shadow = os.path.join(TEMPDIR, f"shadow_{tmpname}")
-                    pointers.logocolored = os.path.join(TEMPDIR, f"logocolor_{tmpname}")
+                        width, height = walsize
+                        tmpname = f"{motive}_{width}x{height}.png"
+                        pointers = TempImagePointers()
+                        pointers.wal = walpath
+                        pointers.blurred = effect_paths.get("blurred", "")
+                        pointers.blurred_dark = effect_paths.get("blurred_dark", "")
+                        pointers.blurred_darker = effect_paths.get("blurred_darker", "")
+                        pointers.brightened = effect_paths.get("brightened", "")
+                        pointers.flipped = effect_paths.get("flipped", "")
+                        pointers.negated = effect_paths.get("negated", "")
+                        pointers.pixelated = effect_paths.get("pixelated", "")
+                        pointers.mask = os.path.join(TEMPDIR, f"mask_{tmpname}")
+                        pointers.shadow = os.path.join(TEMPDIR, f"shadow_{tmpname}")
+                        pointers.logocolored = os.path.join(TEMPDIR, f"logocolor_{tmpname}")
 
-                    renderlist.append((pointers, style, out))
-                    delete_temps.update(effect_paths.values())
+                        renderlist.append((pointers, style, out))
+                        delete_temps.update(effect_paths.values())
 
             render_tasks = len(renderlist)
             render_chunksize = compute_chunksize(render_tasks, workers)
@@ -1046,6 +1095,9 @@ def main():
                 if os.path.exists(tmpfile):
                     os.remove(tmpfile)
             delete_temps = set()
+
+    except Exception as e:
+        logger.error(e)
 
     finally:
         # ensure pool is closed before removing temp dir
