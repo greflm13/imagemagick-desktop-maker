@@ -17,7 +17,7 @@ from PIL import Image, ImageFile, ImageFilter, ImageChops, ImageEnhance, ImageOp
 from rich_argparse import RichHelpFormatter, HelpPreviewAction
 from pythonjsonlogger import jsonlogger
 
-SCRIPTDIR = os.path.abspath(os.path.dirname(__file__))
+SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 SVGDIR = os.path.join(SCRIPTDIR, "Svgs")
 WALLPAPERDIR = os.path.join(SCRIPTDIR, "Wallpapers")
 OUTDIR = os.path.join(SCRIPTDIR, "Render")
