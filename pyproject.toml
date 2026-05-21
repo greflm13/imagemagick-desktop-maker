@@ -14,11 +14,11 @@
     authors = [{ name = "Flo Greistorfer" }]
 
     dependencies = [
-        "CairoSVG==2.7.1",
-        "Pillow==12.0.0",
-        "python_json_logger==2.0.7",
-        "rich_argparse==1.7.1",
-        "tqdm==4.66.6",
+        "CairoSVG~=2.9.0",
+        "Pillow~=12.0.0",
+        "python_json_logger~=2.0.7",
+        "rich_argparse~=1.7.1",
+        "tqdm~=4.66.6",
     ]
 
     [project.scripts]
@@ -44,3 +44,6 @@
     [tool.ruff.format]
         indent-style = "space"
         quote-style  = "double"
+
+[tool.deptry.per_rule_ignores]
+    DEP003 = ["wallpaper_maker"]

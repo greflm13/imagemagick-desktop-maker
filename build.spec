@@ -3,7 +3,7 @@ import tomllib
 
 from PyInstaller.building.api import EXE, PYZ
 from PyInstaller.building.build_main import Analysis
-from PyInstaller.utils.hooks import collect_submodules
+from PyInstaller.utils.hooks import collect_dynamic_libs, collect_submodules
 
 with open("pyproject.toml", "rb") as f:
     app_name = tomllib.load(f)["project"]["name"]
@@ -13,11 +13,12 @@ build_arch = platform.machine()
 name = f"{app_name}-{build_os}-{build_arch}"
 datas = []
 hiddenimports = collect_submodules("modules")
+binaries = collect_dynamic_libs("cairocffi")
 
 a = Analysis(
     ["src/wallpaper_maker/main.py"],
     pathex=[],
-    binaries=[],
+    binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,
     hookspath=[],
