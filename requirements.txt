@@ -1,5 +1,0 @@
-CairoSVG==2.7.1
-Pillow==12.0.0
-python_json_logger==2.0.7
-rich_argparse==1.7.1
-tqdm==4.66.6

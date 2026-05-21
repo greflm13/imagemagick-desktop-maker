@@ -1,0 +1,62 @@
+{
+    "folders": [
+        {
+            "path": "./"
+        }
+    ],
+    "settings": {
+        "ruff.lineLength": 140,
+        "python.analysis.inlayHints.callArgumentNames": "off",
+        "python.analysis.inlayHints.functionReturnTypes": false,
+        "python.analysis.inlayHints.variableTypes": false,
+        "editor.formatOnSave": false,
+        "[python]": {
+            "editor.defaultFormatter": "charliermarsh.ruff"
+        },
+        "python-envs.pythonProjects": [
+            {
+                "path": "",
+                "envManager": "ms-python.python:pyenv",
+                "packageManager": "ms-python.python:pip"
+            }
+        ],
+        "python.analysis.typeCheckingMode": "standard",
+        "evenBetterToml.schema.associations": {
+            "**/pyproject.toml": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/pyproject.json"
+        },
+        "files.associations": {
+            "build.spec": "python"
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "charliermarsh.ruff"
+        ]
+    },
+    "launch": {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "Debug wallpaper-maker",
+                "type": "debugpy",
+                "request": "launch",
+                "program": "${workspaceFolder}/src/wallpaper_maker/main.py",
+                "console": "integratedTerminal",
+                "args": [
+                    "-i",
+                    "Wallpapers",
+                    "-m",
+                    "Svgs",
+                    "-o",
+                    "Render",
+                    "--effects",
+                    "ColorThrough",
+                    "ColorOverlayBlur",
+                    "--colors",
+                    "Tannengrün"
+                ]
+            }
+        ],
+        "compounds": []
+    }
+}
