@@ -138,27 +138,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install . --group dev
 
-      - name: Install system dependencies (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libcairo2 libcairo2-dev
-
-      - name: Install system dependencies (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install cairo
-
-      - name: Install Cairo (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          choco install gtk-runtime -y
-
-      - name: Add Cairo to PATH (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          echo "C:\Program Files\GTK3-Runtime Win64\bin" >> $GITHUB_PATH
-
       - name: Build package
         shell: bash
         run: |
