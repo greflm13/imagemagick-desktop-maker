@@ -12,7 +12,7 @@ build_arch = platform.machine()
 
 name = f"{app_name}-{build_os}-{build_arch}"
 datas = []
-hiddenimports = collect_submodules("modules")
+hiddenimports = collect_submodules("wallpaper_maker.modules")
 
 a = Analysis(
     ["src/wallpaper_maker/main.py"],
